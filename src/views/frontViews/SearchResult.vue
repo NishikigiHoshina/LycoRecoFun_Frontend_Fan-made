@@ -16,9 +16,28 @@ export default{
 </script>
 
 <template>
-<div>
+  <div>
+    <div>
+      <el-row>
 
-</div>
+      </el-row>
+    </div>
+
+    <el-row>
+      <el-col :span="1">
+        <p>&nbsp;</p>
+      </el-col>
+      <el-col :span="22">
+
+      </el-col>
+
+      <el-col :span="1">
+        <p>&nbsp;</p>
+      </el-col>
+
+    </el-row>
+
+  </div>
 </template>
 
 <style scoped>

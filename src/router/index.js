@@ -6,6 +6,7 @@ import ValueDemo from "@/views/backViews/ValueDemo.vue";
 import PageOne from "@/views/backViews/PageOne.vue";
 import PageTwo from "@/views/backViews/PageTwo.vue";
 import HomeDemo from "@/views/backViews/HomeDemo.vue";
+import PostControl from "@/views/backViews/PostControl.vue";
 
 import LayoutVersion1 from "@/layouts/LayoutVersion1.vue";
 // 客户端样式模板
@@ -17,6 +18,7 @@ import Message from "@/views/frontViews/TakeMessage.vue"
 
 //课堂测试页
 import Demo from "@/views/frontViews/demo.vue";
+
 
 Vue.use(VueRouter)
 
@@ -35,6 +37,7 @@ const routes = [
       {path: 'Index', component: HomeDemo},
       {path: 'One', component: PageOne},
       {path: 'Two', component: PageTwo},
+      {path: 'PostControl', component: PostControl},
       {path: 'value/:value', name:'homedemoValue',component: ValueDemo},
     ],
   },

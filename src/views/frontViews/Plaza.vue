@@ -1,58 +1,20 @@
 <script>
 import axios from "axios";
 import {left} from "core-js/internals/array-reduce";
+import searchResult from "@/views/frontViews/SearchResult.vue";
 export default {
   name:'Plaza',
   data(){
     return{
       activeIndex: '1',
       postinfo:null,
-      // postinfo:[{
-      //   id:1,
-      //   title:"Hello, Nice to meet you!",
-      //   user:"xxxLUCY",
-      //   main:"hello everyone,i want to show my exciting to meet you, hope we can get on well",
-      //   time:"2025-10-11 18:07",
-      //   link:"#/Index/posts/1",
-      //   imgurl:"https://free.picui.cn/free/2025/10/12/68ea87d94f445.jpg"
-      // },{
-      //   id:2,
-      //   title:"How could i change my avater?",
-      //   user:"Dark Angels",
-      //   main:"wait…could anyone tell me how could i change my avater? the default one looks not pretty……",
-      //   time:"2025-10-11 23:17",
-      //   link:"#/Index/posts/2",
-      //   imgurl:"https://free.picui.cn/free/2025/10/12/68ea81a34978d.png"
-      // },{
-      //   id:3,
-      //   title:"Hello, Nice to meet you!",
-      //   user:"xxxLUCY",
-      //   main:"hello everyone,i want to show my exciting to meet you, hope we can get on well",
-      //   time:"2025-10-11 18:07",
-      //   link:"#/Index/posts/1",
-      //   imgurl:"https://free.picui.cn/free/2025/10/12/68ea87d94f445.jpg"
-      // },{
-      //   id:4,
-      //   title:"How could i change my avater?",
-      //   user:"Dark Angels",
-      //   main:"wait…could anyone tell me how could i change my avater? the default one looks not pretty……",
-      //   time:"2025-10-11 23:17",
-      //   link:"#/Index/posts/2",
-      //   imgurl:"https://free.picui.cn/free/2025/10/12/68ea81a34978d.png"
-      // }],
+      input:null,
 
-      tags: [
-        { name: '标签一', type: '' },
-        { name: '标签二', type: 'success' },
-        { name: '标签三', type: 'info' },
-        { name: '标签四', type: 'warning' },
-        { name: '标签五', type: 'danger' }
-      ],
 
     }
   },
   mounted() {
-    axios.get("http://localhost:12808/lycorisfunServer/api/getPostList").then((res)=>{
+    axios.post("http://localhost:12808/lycorisfunServer/api/postlist").then((res)=>{
       console.log(res)
       this.postinfo=res.data;
     }).catch(function (err){
@@ -61,7 +23,9 @@ export default {
 
   },
   methods:{
-    left
+    searchPost(){
+
+    }
 
   },
 
@@ -96,21 +60,10 @@ export default {
               <div style="margin: 10px">
                 <el-card >
                   <div style="padding-bottom: 5px;">
-                    <el-tag size="small"
-                        v-for="tag in tags"
-                        :key="tag.name"
-                        closable
-                        :type="tag.type">
-                      {{tag.name}}
-                    </el-tag>
-                  </div>
-                  <hr>
-                  <div style="padding-top: 5px;">
-                    <el-tag size="medium" >标签一</el-tag>
-                    <el-tag size="medium" type="success">标签二</el-tag>
-                    <el-tag size="medium" type="info">标签三</el-tag>
-                    <el-tag size="medium" type="warning">标签四</el-tag>
-                    <el-tag size="medium" type="danger">标签五</el-tag>
+                    <div style="display: flex; justify-content: center; align-items: center;">
+                      <el-input v-model="input" placeholder="搜索留言"></el-input>
+                      <el-button @click="searchPost()" type="primary" icon="el-icon-search">搜索</el-button>
+                    </div>
                   </div>
                 </el-card>
               </div>
@@ -122,10 +75,14 @@ export default {
           <el-col :span="18">
             <div v-if="postinfo">
               <div class="father">
-                <section v-for="(o,index) in postinfo" :key="o.id" class="image">
-                  <img :src="o.imgurl" alt="img">
-                  <span>{{o.title}}</span>
-                  <time class="time">{{o.time}}</time>
+                <section v-for="(o,index) in postinfo" :key="o.postid" class="image">
+                  <a :href="o.link" target="_blank">
+                    <div class="limit">
+                      <img :src="o.imgurl" alt="img">
+                    </div>
+                    <span>{{o.title}}</span>
+                    <time class="time">{{o.created_at}}</time>
+                  </a>
                 </section>
               </div>
 
@@ -217,10 +174,7 @@ body{
   float: right;
 }
 
-.image {
-  width: 100%;
-  display: block;
-}
+
 
 .clearfix:before,
 .clearfix:after {
@@ -255,8 +209,9 @@ body{
 .father{
   zheshizhushi:"瀑布流样式";
   width:100%;
-  column-count:5;
-  column-gap:15px;
+  row-count:5;
+  row-gap: 15px;
+
 
 }
 .image{
@@ -267,17 +222,21 @@ body{
   background-color: #d5e0f1;
   padding: 5px;
 }
+.limit{
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+}
 .image img {
   width: 100%;
   height: 100%;
   border-radius: 15px;
   transition: 0.5s;
   cursor: pointer;
-  max-height:130%;
 }
 .image img:hover{
-  width:120%;
-  height:120%;
+  width:110%;
+  height:110%;
   overflow:hidden;
 }
 @media (max-width:1200px){
@@ -294,27 +253,6 @@ body{
   .father {
     column-count: 2;
   }
-}
-
-.preview-container {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  opacity: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  pointer-events:auto;
-  transition: opacity 0.3s ease;
-}
-
-.preview-container img {
-  max-width: 80%;
-  max-height: 80%;
-  margin: auto;
 }
 
 </style>
