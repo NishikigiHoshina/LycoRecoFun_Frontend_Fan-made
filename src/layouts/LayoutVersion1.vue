@@ -3,14 +3,18 @@ import { ref } from 'vue'
 const collapsed = ref(false)
 </script>
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
       activeIndex: '1',
       input: '',
-
       drawer: false,
       direction: 'rtl',
+      connect_status:true,
+      upload_status:true,
+      database_status:true,
     };
   },
   methods: {
@@ -45,6 +49,28 @@ export default {
         this.$router.push('/Index/message')
       }
     },
+  },
+  created() {
+    axios.post("http://localhost:12808/lycorisfunServer/api/getfuncstatus?funcname=connectWebSiteOwner").then((res)=>{
+      console.log(res.data)
+      this.connect_status=res.data
+    }).catch(function (err){
+      console.log("出错了喵"+err)
+    })
+
+    axios.post("http://localhost:12808/lycorisfunServer/api/getfuncstatus?funcname=uploadWork").then((res)=>{
+      console.log(res.data)
+      this.upload_status=res.data
+    }).catch(function (err){
+      console.log("出错了喵"+err)
+    })
+
+    axios.post("http://localhost:12808/lycorisfunServer/api/getfuncstatus?funcname=databaseFunction").then((res)=>{
+      console.log(res.data)
+      this.database_status=res.data
+    }).catch(function (err){
+      console.log("出错了喵"+err)
+    })
   }
 };
 </script>
@@ -74,14 +100,14 @@ export default {
             <el-submenu index="1" :span="2">
               <template slot="title">首页</template>
               <el-menu-item index="1-1" @click="linktoindex">新闻</el-menu-item>
-              <el-menu-item disabled title="还在施工喵" index="1-2">联系站长</el-menu-item>
+              <el-menu-item :disabled="connect_status" title="还在施工喵" index="1-2">联系站长</el-menu-item>
             </el-submenu>
 
             <el-submenu index="2" :span="2">
               <template slot="title">广场</template>
               <el-menu-item index="2-1" @click="linktoplaza">留言板</el-menu-item>
               <el-menu-item index="2-2" @click="linktomessage">我要留言</el-menu-item>
-              <el-menu-item disabled title="不在开放时间内，请留意公告喵" index="2-3" @click="linktomessage">上传作品</el-menu-item>
+              <el-menu-item :disabled="upload_status" title="不在开放时间内，请留意公告喵" index="2-3" @click="linktomessage">上传作品</el-menu-item>
 <!--              <el-submenu index="3-3" :span="2">-->
 <!--                <template slot="title">选项三</template>-->
 <!--                <el-menu-item index="3-3-1">子选项一</el-menu-item>-->
@@ -90,7 +116,7 @@ export default {
 <!--              </el-submenu>-->
             </el-submenu>
 
-            <el-submenu index="3" :span="2">
+            <el-submenu :disabled="database_status" index="3" :span="2">
               <template slot="title">资料</template>
               <el-menu-item index="3-1">设定</el-menu-item>
               <el-menu-item index="3-2">图集</el-menu-item>

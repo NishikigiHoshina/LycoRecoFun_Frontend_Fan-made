@@ -37,14 +37,33 @@ export default {
 
     <div>
       <section>
-        <div class="bgblue">
-          <p>传值:{{typeId}}</p>
+        <div class="bggray">
+          <h3>后台管理</h3>
         </div>
-        <div>
-          <input type="button" value="跳转" @click="jump" ><br/>
-          <input type="button" value="跳转" @click="jumptwo" ><br/>
-          <input type="button" value="跳转" @click="jumptoValue" ><br/>
-          <input type="button" value="前往落地页" @click="jumptocover" >
+        <div style="width: 100%; padding: 30px; display: flex; justify-content: center; align-items: center;">
+          <div style="width: 100%">
+            <el-row>
+              <div class="card card1">
+                <h1><img class="img-icon" src="../../img/post.png" alt="icon">帖子管理</h1>
+                <router-link class="noneunderline" to="/homeDemo/PostControl">前往</router-link>
+              </div>
+              <div class="card card2">
+                <h1><img class="img-icon" src="../../img/user.png" alt="icon">用户管理</h1>
+                <router-link class="noneunderline" to="/homeDemo/UserControl">前往</router-link>
+              </div>
+            </el-row>
+            <el-row>
+              <div class="card card3">
+                <h1><img class="img-icon" src="../../img/news.png" alt="icon">新闻管理</h1>
+                <router-link class="noneunderline" to="/homeDemo/NewsControl">前往</router-link>
+              </div>
+              <div class="card card4">
+                <h1><img class="img-icon" src="../../img/site.png" alt="icon">站内管理</h1>
+                <router-link class="noneunderline" to="/homeDemo/SiteControl">前往</router-link>
+              </div>
+            </el-row>
+
+          </div>
         </div>
       </section>
     </div>
@@ -57,8 +76,38 @@ export default {
   margin: 0;
   padding: 0;
 }
-  .bgblue{
+  .bggray{
     background-color: #7e9299;
     color: #f5f7fa
+  }
+
+  .card{
+    width: 45%;
+    box-shadow: 2px 2px 2px gray;
+    border-radius: 10px;
+    padding: 20px;
+    float: left;
+    color: white;
+    margin: 10px;
+  }
+  .card1{
+    background-color: chartreuse;
+  }
+  .card2{
+    background-color: hotpink;
+  }
+  .card3{
+    background-color: dodgerblue;
+  }
+  .card4{
+    background-color: #d5d536;
+  }
+
+  .noneunderline{
+    text-decoration: none;
+  }
+  .img-icon{
+    width: 50px;
+    height: 50px;
   }
 </style>

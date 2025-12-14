@@ -5,7 +5,7 @@ export default{
   name:"PostControl",
   data(){
     return{
-      postlist:[],
+      postlist:null,
       editdialogVisible: false,
       detaildialogVisible: false,
       currentpost:[],
@@ -73,7 +73,7 @@ export default{
     </h2>
     <hr>
     <div style="text-align: center;">
-      <table>
+      <table v-if="postlist">
         <thead>
         <tr>
           <th>帖子id</th>
@@ -86,20 +86,22 @@ export default{
           <th>操作</th>
         </tr>
         </thead>
-        <tr  v-for="post in postlist" :key="post.postid">
-          <td style="border:1px solid">{{post.postid}}</td>
-          <td>{{post.title}}</td>
-          <td>{{post.content}}</td>
-          <td>{{post.created_at}}</td>
-          <td>{{post.root_id}}</td>
-          <td>{{post.status}}</td>
-          <td>{{post.post_username}}</td>
-          <td><el-button type="text" @click="function(){currentRow=post.postid;loadinfo();detaildialogVisible=true}">查看</el-button><br>
-            <el-button type="text" @click="function(){currentRow=post.postid;loadinfo();editdialogVisible=true;}">编辑</el-button><br>
-            <el-button type="text" @click="function(){$confirm('确认删除？').then(deletepost).catch(_ => {}); currentRow=post.postid;loadinfo();}">删除</el-button></td>
-        </tr>
-
+          <tr  v-for="post in postlist" :key="post.postid">
+            <td style="border:1px solid">{{post.postid}}</td>
+            <td>{{post.title}}</td>
+            <td>{{post.content}}</td>
+            <td>{{post.created_at}}</td>
+            <td>{{post.root_id}}</td>
+            <td>{{post.status}}</td>
+            <td>{{post.post_username}}</td>
+            <td><el-button type="text" @click="function(){currentRow=post.postid;loadinfo();detaildialogVisible=true}">查看</el-button><br>
+              <el-button type="text" @click="function(){currentRow=post.postid;loadinfo();editdialogVisible=true;}">编辑</el-button><br>
+              <el-button type="text" @click="function(){$confirm('确认删除？').then(deletepost).catch(_ => {}); currentRow=post.postid;loadinfo();}">删除</el-button></td>
+          </tr>
       </table>
+      <div v-else>
+        <h2 style="color: red">查询不到数据喵，请检查服务器状态喵！</h2>
+      </div>
     </div>
     <div>
 <!--      编辑框-->

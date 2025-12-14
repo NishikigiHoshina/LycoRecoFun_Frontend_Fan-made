@@ -3,10 +3,11 @@ import VueRouter from 'vue-router';
 import BasicLayout from '@/layouts/BasicLayout.vue';
 // 后台样式模板
 import ValueDemo from "@/views/backViews/ValueDemo.vue";
-import PageOne from "@/views/backViews/PageOne.vue";
-import PageTwo from "@/views/backViews/PageTwo.vue";
 import HomeDemo from "@/views/backViews/HomeDemo.vue";
 import PostControl from "@/views/backViews/PostControl.vue";
+import UserControl from "@/views/backViews/UserControl.vue";
+import NewsControl from "@/views/backViews/NewsControl.vue";
+import SiteControl from "@/views/backViews/SiteControl.vue";
 
 import LayoutVersion1 from "@/layouts/LayoutVersion1.vue";
 // 客户端样式模板
@@ -35,9 +36,10 @@ const routes = [
     redirect:'/homeDemo/Index',
     children:[
       {path: 'Index', component: HomeDemo},
-      {path: 'One', component: PageOne},
-      {path: 'Two', component: PageTwo},
+      {path: 'UserControl', component: UserControl},
+      {path: 'NewsControl', component: NewsControl},
       {path: 'PostControl', component: PostControl},
+      {path: 'SiteControl', component: SiteControl},
       {path: 'value/:value', name:'homedemoValue',component: ValueDemo},
     ],
   },

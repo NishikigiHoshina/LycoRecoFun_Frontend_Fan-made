@@ -8,9 +8,10 @@
       </button>
       <nav v-show="!collapsed">
         <router-link to="/homeDemo/index">首页</router-link>
-        <router-link to="/homeDemo/One">一</router-link>
-        <router-link to="/homeDemo/Two">二</router-link>
         <router-link to="/homeDemo/PostControl">帖子管理</router-link>
+        <router-link to="/homeDemo/UserControl">用户管理</router-link>
+        <router-link to="/homeDemo/NewsControl">新闻管理</router-link>
+        <router-link to="/homeDemo/SiteControl">站内管理</router-link>
         <router-link to="/Index/index">返回前台</router-link>
       </nav>
     </aside>

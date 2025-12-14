@@ -6,11 +6,7 @@ export default {
   data(){
     return{
       // currentDate: new Date(),
-      imginRound:[{id:0,url: "https://free.picui.cn/free/2025/10/19/68f4fdde3ac7a.jpg",},
-        {id:1,url: "https://free.picui.cn/free/2025/10/19/68f4fde4d3d05.jpg",},
-        {id:2,url: "https://free.picui.cn/free/2025/10/19/68f4fde4dd385.jpg",},
-        {id:3,url: "https://free.picui.cn/free/2025/10/19/68f4fde257372.jpg",},
-      ],
+      imglinklist:[],
       newsList:null,
       Announcement:null,
     };
@@ -28,6 +24,14 @@ export default {
     axios.post("http://localhost:12808/lycorisfunServer/api/getAnnouncement").then((res)=>{
       console.log(res)
       this.Announcement=res.data;
+    }).catch(function (err){
+      console.log(err)
+      console.log("找不到方法喵")
+    })
+
+    axios.post("http://localhost:12808/lycorisfunServer/api/getIndexIMG").then((res)=>{
+      console.log(res)
+      this.imglinklist=res.data;
     }).catch(function (err){
       console.log(err)
       console.log("找不到方法喵")
@@ -53,8 +57,8 @@ export default {
 <!--        </el-carousel-item>-->
 <!--      </el-carousel>-->
       <el-carousel :interval="6000" height="60vh" direction="vertical" :autoplay="true">
-        <el-carousel-item v-for="item in imginRound" :key="item.id">
-          <img style="width: 100%;height: 130%;" :src="item.url" alt="">
+        <el-carousel-item v-for="item in imglinklist" :key="item.id">
+          <img style="width: 100%;height: 130%;" :src="item" alt="">
 
 <!--          <div style="text-align: left; position: absolute; bottom:2%; left: 2%; margin: 0;padding: 0">-->
 <!--            <h3>这里是标题</h3>-->
