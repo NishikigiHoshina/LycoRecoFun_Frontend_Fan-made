@@ -21,7 +21,7 @@ export default {
       try {
         // 1. 整包提交（字段名 == 构造器参数名）
         const res = await axios.post(
-            'http://localhost:12808/lycorisfunServer/api/writepost',
+            'http://localhost:12808/lycorisfunServer/api/takemessage',
             this.form          // {title, post_username, content, link, imgurl}
         )
         // 2. 后端返回 boolean
@@ -66,7 +66,7 @@ export default {
       <div class="padding_20px card-main" >
         <el-row class="padding_20px">
           <div>
-            <h2>写留言</h2>
+            <h1 style="text-align: right;color: #159ee6">写留言</h1>
             <hr>
             {{form.content}}
             {{form.link}}

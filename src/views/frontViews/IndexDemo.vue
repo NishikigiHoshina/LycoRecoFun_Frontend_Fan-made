@@ -56,7 +56,7 @@ export default {
 
 <!--        </el-carousel-item>-->
 <!--      </el-carousel>-->
-      <el-carousel :interval="6000" height="60vh" direction="vertical" :autoplay="true">
+      <el-carousel :interval="6000" height="60vh" direction="horizontal" :autoplay="true">
         <el-carousel-item v-for="item in imglinklist" :key="item.id">
           <img style="width: 100%;height: 130%;" :src="item" alt="">
 

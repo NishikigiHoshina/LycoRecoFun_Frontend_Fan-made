@@ -24,10 +24,39 @@ export default {
   },
   methods:{
     searchPost(){
-
+      if(this.input){
+        axios({
+          method:'post',
+          url:'http://localhost:12808/lycorisfunServer/api/searchBytitle',
+          params: { title: this.input }
+        }).then((res)=>{
+          this.postinfo = res.data || [];   // 直接拿数组
+        }).catch(() => {
+          this.postinfo = [];
+        });
+      }else
+        this.$message.warning('搜索内容不能为空')
+    },
+    gowritepost(){
+      const { path } = this.$route
+      if (path !== '/Index/write') {
+        this.$router.push('/Index/write')
+      }
+    },
+    gologin(){
+      this.$router.push('/Login')
     }
 
   },
+  computed:{
+    islogin(){
+      let token = localStorage.getItem('token')
+      if (token){
+        return true
+      }else
+        return false
+    }
+  }
 
 }
 </script>
@@ -46,23 +75,25 @@ export default {
     </el-col>
     <el-col :span="22">
       <!--消息区-->
-      <div class="padding_20px card-main" >
+      <div class="padding_20px card-main min-height" >
         <el-row class="padding_20px">
           <h1 style="text-align: right;color: #159ee6">留言板</h1>
           <hr>
         </el-row>
         <el-row>
           <el-col :span="6">
-            <el-row>
-              <p style="height: 7vh;">&nbsp;</p>
-            </el-row>
+<!--            <el-row>-->
+<!--              <p style="height: 7vh;">&nbsp;</p>-->
+<!--            </el-row>-->
             <el-row>
               <div style="margin: 10px">
+                <el-button class="margin_5px" v-if="islogin" type="primary" @click="gowritepost">发 帖</el-button>
+                <el-button class="margin_5px" v-else type="primary" @click="gologin">登录后发帖</el-button>
                 <el-card >
                   <div style="padding-bottom: 5px;">
                     <div style="display: flex; justify-content: center; align-items: center;">
                       <el-input v-model="input" placeholder="搜索留言"></el-input>
-                      <el-button @click="searchPost()" type="primary" icon="el-icon-search">搜索</el-button>
+                      <el-button @click="searchPost" type="primary" icon="el-icon-search">搜索</el-button>
                     </div>
                   </div>
                 </el-card>
@@ -77,10 +108,11 @@ export default {
               <div class="father">
                 <section v-for="(o,index) in postinfo" :key="o.postid" class="image">
                   <a :href="o.link" target="_blank">
-                    <div class="limit">
+                    <div v-if="o.imgurl" class="limit">
                       <img :src="o.imgurl" alt="img">
                     </div>
-                    <span>{{o.title}}</span>
+                    <h3>{{o.title}}</h3>
+                    <p>by:{{o.post_username}}</p>
                     <time class="time">{{o.created_at}}</time>
                   </a>
                 </section>
@@ -174,15 +206,16 @@ body{
   float: right;
 }
 
-
+.min-height{
+  min-height: 500px;
+}
 
 .clearfix:before,
 .clearfix:after {
   display: table;
-  content: "";
 }
-
 .clearfix:after {
+  content: "";
   clear: both
 }
 
@@ -194,6 +227,9 @@ body{
 
 .padding_20px{
   padding: 20px;
+}
+.margin_5px{
+  margin: 5px;
 }
 .card-main{
   background-color: #cff3f3;
@@ -208,10 +244,8 @@ body{
 
 .father{
   zheshizhushi:"瀑布流样式";
-  width:100%;
-  row-count:5;
-  row-gap: 15px;
-
+  column-count:5;
+  col-gap: 15px;
 
 }
 .image{

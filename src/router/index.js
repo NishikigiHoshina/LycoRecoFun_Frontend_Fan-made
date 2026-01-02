@@ -16,9 +16,12 @@ import Plaza from "@/views/frontViews/Plaza.vue";
 import Set from "@/views/frontViews/Set.vue";
 import Gallery from "@/views/frontViews/Gallery.vue";
 import Message from "@/views/frontViews/TakeMessage.vue"
+import Login from "@/views/frontViews/Login.vue";
+import WritePost from "@/views/frontViews/WritePost.vue";
 
 //课堂测试页
 import Demo from "@/views/frontViews/demo.vue";
+
 
 
 Vue.use(VueRouter)
@@ -28,6 +31,11 @@ const routes = [
     path: '/',
     redirect: '/Index',
     name: 'Home',
+  },
+  {
+    path: '/Login',
+    name: 'Login',
+    component: Login,
   },
   {
     path:'/homeDemo',
@@ -54,7 +62,16 @@ const routes = [
       {path: 'plaza',name: 'plaza',component:Plaza },
       {path: 'gallery',name: 'gallery',component:Gallery },
       {path: 'set',name: 'set',component:Set},
-      {path: 'message',name: 'message',component:Message }
+      {path: 'message',name: 'message',component:Message },
+      {path: 'write',name: 'write',component:WritePost,
+        beforeEnter: (to, from, next) => {
+          let token =localStorage.getItem('token');// 你的登录态判断
+          if (!token) {
+            next('/login');                // 未登录直接重定向，不再进组件
+          } else {
+            next();                        // 已登录正常进入
+          }
+        }}
     ],
   },
   {

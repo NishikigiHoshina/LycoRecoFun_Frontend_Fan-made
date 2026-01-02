@@ -21,7 +21,14 @@ export default{
         const payload = JSON.parse(JSON.stringify(this.currentnews))
 
         // 2. 发 POST，Content-Type: application/json 自动设置
-        await axios.post('http://localhost:12808/lycorisfunServer/api/updatePostinfo', payload)
+        await axios({
+          method:'post',
+          url: 'http://localhost:12808/lycorisfunServer/api/updatePostinfo',
+          headers:{
+            'token': localStorage.getItem('token')
+          },
+          payload
+        })
 
         // 3. 成功回写 + 提示
         const idx = this.currentRow - 1

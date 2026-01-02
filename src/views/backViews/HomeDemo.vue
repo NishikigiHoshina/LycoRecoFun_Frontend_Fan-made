@@ -27,7 +27,12 @@ export default {
   created() {
     this.typeId=this.$route.query.typeid
     console.log(this.$route.query.typeid)
-  }
+  },
+  // beforeRouteEnter(to, from, next){
+  //   let token =localStorage.getItem('token');
+  //   if(!token)next('/Login');
+  //   else next()
+  // }
 }
 
 </script>

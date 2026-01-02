@@ -34,6 +34,17 @@
 <script setup>
 import { ref } from 'vue'
 const collapsed = ref(false)
+
+</script>
+<script>
+export default {
+  name: 'homeLayout',
+  beforeRouteEnter(to, from, next){
+    let token =localStorage.getItem('token');
+    if(!token)next('/Login');
+    else next()
+  }
+}
 </script>
 
 <style scoped>

@@ -14,4 +14,5 @@
 }
 </style>
 <script setup lang="ts">
+import './Dev-tools-detect-index.js';   // 只触发一次，挂 window.devtools
 </script>
