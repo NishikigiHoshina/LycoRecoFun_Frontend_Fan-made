@@ -1,38 +1,36 @@
 <script >
 import axios from "axios";
+import PostComment from '@/components/comment/PostComment.vue'
 export default {
   name:'posts',
+  components: { PostComment },
   data(){
     return{
-      postinfo:[],
+      postid:this.$route.params.id,
       post: null,
+      contentlist:[],
+      usercontent:{
+        id:window.localStorage.getItem('userid'),
+        content:'',
+        root_id:this.$route.params.id,
+      },
     }
   },
   created() {
-    axios.get("http://localhost:12808/lycorisfunServer/api/getPostList").then((res)=>{
-      console.log(res)
-      this.postinfo=res.data;
-    }).catch(function (err){
-      console.log(err)
-    })
+
   },
   mounted() {
-
-
-    this.loadPost()
+    axios({
+      method: 'post',
+      url: 'http://localhost:12808/lycorisfunServer/api/getPostByid',
+      params: { postid: this.postid }
+    }).then((res)=>{
+      this.post=res.data;
+    })
   },
   watch: {
-    postinfo() {
-      this.loadPost()   // 数据只要更新就重新匹配
-    },
-    '$route.params.id': 'loadPost'
-    // 同组件切换时重新加载
   },
   methods:{
-    loadPost() {
-      const id = Number(this.$route.params.id)
-      this.post = this.postinfo.find(p => p.id === id) || null
-    },
     back(){
       this.$router.go(-1);
     }
@@ -41,33 +39,42 @@ export default {
 </script>
 
 <template>
-<div style="text-align: center;margin-bottom: 30px;">
-
-
+<div>
   <el-row>
     <p>&nbsp;</p>
   </el-row>
   <el-row>
-    <el-col span="5">
+    <el-col :span="2">
       <p>&nbsp;</p>
-      <el-button @click="back" type="primary">返回</el-button>
+      <el-button @click="back" type="primary" style="width: 80px;height: 30px; margin-left: 50px">返回</el-button>
     </el-col>
-    <el-col span="14">
-      <el-card class="box-card">
-        <div v-if="post">
-          <h1>{{ post.title }}</h1>
-          <p>by: {{ post.user }}  at  {{ post.time }}</p>
-          <div>{{ post.main }}</div>
-          <div>
-            <img style="height: 40%;width: 40%;margin: 15px;" :src="post.imgurl" alt="img">
+    <el-col :span="20" style="padding: 0">
+        <div class="box-card">
+          <div class="post-area">
+            <div v-if="post">
+              <h1>{{ post.title }}</h1>
+              <p>by:<span style="color: deepskyblue">{{ post.post_username }} </span>  at  {{ post.created_at }}</p>
+              <hr>
+              <div class="rich-content" v-html="post.content"></div>
+              <div v-if="post.imgurl">
+                <img style="height: 40%;width: 40%;margin: 15px;" :src="post.imgurl" alt="img">
+              </div>
+            </div>
+            <div v-else>帖子不存在</div>
+          </div>
+          <el-divider content-position="left">评论区</el-divider>
+          <div class="content-area">
+<!--            content-area-->
+            <post-comment :post-id="postid" />
           </div>
         </div>
-        <div v-else>帖子不存在</div>
-      </el-card>
     </el-col>
-    <el-col span="5">
+    <el-col :span="2">
       <p>&nbsp;</p>
     </el-col>
+  </el-row>
+  <el-row>
+    <p>&nbsp;</p>
   </el-row>
 </div>
 </template>
@@ -79,51 +86,45 @@ export default {
   padding: 0;
 }
 
-.text_in_center{
-  text-align: center;
-}
-.headline{
-  height: 8vh;
-  display: inline;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f7fa;
-}
-
-.el-carousel__item h3 {
-  color: #475669;
-  font-size: 18px;
-  opacity: 0.75;
-  line-height: 30px;
-  margin: 0;
-}
-
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
-}
-
-.el-carousel__item:nth-child(2n+1) {
-  background-color: #d3dce6;
-}
-
-.text {
-  font-size: 14px;
-}
-
-.item {
-  padding: 18px 0;
-}
-
 .box-card {
+  background-color: #cff3f3;
+  padding: 30px;
+  min-height: 490px;
   text-align: left;
-  width: 880px;
-  height: 700px;
-  margin-left: 50%;
-  transform:translateX(-50%);
+  border-radius: 10px;
+  margin: 10px;
 }
 
-.bg-white{
-  background: #f5f7fa;
-  height: 8vh;
+.post-area{
+  min-height: 200px;
 }
+.content-area{
+  min-height: 200px;
+  padding: 20px;
+}
+.floatarea{
+  /* float: left; */
+}
+.input{
+  padding: 5px;
+  margin: 0;
+  min-width: 500px;
+  max-width: 100%;
+  width: 90%;
+  min-height: 50px;
+  border: 2px solid #63af95;
+  border-radius: 10px;
+}
+.input:hover{
+  border: 2px solid #27aee8;
+}
+.submit_button{
+  width: 10%;
+  height: 35px;
+  padding: 5px;
+}
+.clearfloat{
+  clear: both;
+}
+
 </style>

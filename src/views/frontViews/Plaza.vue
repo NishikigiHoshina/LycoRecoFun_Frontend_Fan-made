@@ -10,7 +10,6 @@ export default {
       postinfo:null,
       input:null,
 
-
     }
   },
   mounted() {
@@ -70,60 +69,54 @@ export default {
   </div>
 
   <el-row>
-    <el-col :span="1">
+    <el-col :span="2">
       <p>&nbsp;</p>
     </el-col>
-    <el-col :span="22">
+    <el-col :span="20">
       <!--消息区-->
       <div class="padding_20px card-main min-height" >
         <el-row class="padding_20px">
           <h1 style="text-align: right;color: #159ee6">留言板</h1>
           <hr>
+          <el-row>
+            <div style="margin: 10px">
+              <el-button class="margin_5px" v-if="islogin" type="primary" @click="gowritepost">发 帖</el-button>
+              <el-button class="margin_5px" v-else type="primary" @click="gologin">登录后发帖</el-button>
+              <el-card >
+                <div style="padding-bottom: 5px;">
+                  <div style="display: flex; justify-content: center; align-items: center;">
+                    <el-input v-model="input" placeholder="搜索留言"></el-input>
+                    <el-button @click="searchPost" type="primary" icon="el-icon-search">搜索</el-button>
+                  </div>
+                </div>
+              </el-card>
+            </div>
+          </el-row>
         </el-row>
         <el-row>
-          <el-col :span="6">
-<!--            <el-row>-->
-<!--              <p style="height: 7vh;">&nbsp;</p>-->
-<!--            </el-row>-->
-            <el-row>
-              <div style="margin: 10px">
-                <el-button class="margin_5px" v-if="islogin" type="primary" @click="gowritepost">发 帖</el-button>
-                <el-button class="margin_5px" v-else type="primary" @click="gologin">登录后发帖</el-button>
-                <el-card >
-                  <div style="padding-bottom: 5px;">
-                    <div style="display: flex; justify-content: center; align-items: center;">
-                      <el-input v-model="input" placeholder="搜索留言"></el-input>
-                      <el-button @click="searchPost" type="primary" icon="el-icon-search">搜索</el-button>
-                    </div>
-                  </div>
-                </el-card>
-              </div>
-            </el-row>
-            <el-row>
-              <p style="height: 7vh;">&nbsp;</p>
-            </el-row>
-          </el-col>
-          <el-col :span="18">
+          <el-col :span="24">
             <div v-if="postinfo">
               <div class="father">
-                <section v-for="(o,index) in postinfo" :key="o.postid" class="image">
-                  <a :href="o.link" target="_blank">
-                    <div v-if="o.imgurl" class="limit">
-                      <img :src="o.imgurl" alt="img">
-                    </div>
-                    <h3>{{o.title}}</h3>
+                <section v-for="(o,index) in postinfo" :key="o.postid" class="image card" :style="{ backgroundImage: `url(${o.imgurl})`}">
+                  <div class="overlay"></div>
+                  <div class="content">
+                    <h2>{{o.title}}</h2>
                     <p>by:{{o.post_username}}</p>
-                    <time class="time">{{o.created_at}}</time>
-                  </a>
+                    <time class="time">{{o.created_at}} </time>
+                    <el-button type="text" @click="$router.push(`posts/${o.postid}`)">details</el-button>
+                  </div>
                 </section>
               </div>
 
             </div>
             <div class="nothingHere" v-else>
-              <h2>这里还没有留言喵</h2>
+              <h2>找不到留言，请检查服务器状态喵</h2>
             </div>
           </el-col>
         </el-row>
+        <div style="margin:20px">
+          <hr>
+        </div>
         <el-row v-if="postinfo">
           <!--            分页控件-->
           <div class="dom_in_center">
@@ -140,7 +133,7 @@ export default {
       </div>
     </el-col>
 
-    <el-col :span="1">
+    <el-col :span="2">
       <p>&nbsp;</p>
     </el-col>
 
@@ -243,7 +236,8 @@ body{
 
 
 .father{
-  zheshizhushi:"瀑布流样式";
+  /*"瀑布流样式";*/
+  padding: 10px;
   column-count:5;
   col-gap: 15px;
 
@@ -253,9 +247,34 @@ body{
   border-radius:15px;
 
   overflow:hidden;
-  background-color: #d5e0f1;
+  background-color: #74d9ea;
   padding: 5px;
+  box-shadow: 1px 1px 1px gray;
+  transition: 0.1s;
 }
+.image:hover{
+  box-shadow: 2px 3px 3px gray;
+  transition: 0.1s;
+}
+.card {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  overflow: hidden;
+  color: rgba(28, 174, 153, 0.8);
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgb(255, 255, 255,.5);
+}
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 16px;
+}
+
 .limit{
   width: 200px;
   height: 200px;

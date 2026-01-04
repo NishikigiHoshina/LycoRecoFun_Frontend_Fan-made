@@ -41,8 +41,10 @@ export default {
   name: 'homeLayout',
   beforeRouteEnter(to, from, next){
     let token =localStorage.getItem('token');
+    let status=localStorage.getItem('status');
     if(!token)next('/Login');
-    else next()
+    else if (status!=='3')next('/Index/index');
+      else next()
   }
 }
 </script>

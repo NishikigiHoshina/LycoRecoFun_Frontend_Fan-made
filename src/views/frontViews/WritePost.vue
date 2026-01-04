@@ -29,7 +29,9 @@ export default {
         const { data } = await axios({
           method:'post',
           url:'http://localhost:12808/lycorisfunServer/api/writepost',
-          headers:{'token': localStorage.getItem('token')},
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token')   // 标准字段
+          },
           data:this.form})
         this.$message.success(data.msg)
         setTimeout(() => this.$router.go(0), 2000)

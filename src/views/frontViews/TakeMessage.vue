@@ -6,11 +6,9 @@ export default {
   data() {
     return {
       form: {
-        title: '',
         post_username:'',
         content: '',
         link:'',
-        imgurl: '',
       },
       allow:true,
       // ifallow: true,
@@ -47,8 +45,7 @@ export default {
     ifallow() {
       return this.form.post_username.trim().length > 0 &&
           this.form.link.trim().length > 0 &&
-          this.form.content.trim().length > 0 &&
-          this.form.imgurl.trim().length > 0
+          this.form.content.trim().length > 0
     }
   },
   watch: {
@@ -68,10 +65,6 @@ export default {
           <div>
             <h1 style="text-align: right;color: #159ee6">写留言</h1>
             <hr>
-            {{form.content}}
-            {{form.link}}
-            {{form.imgurl}}
-            {{form.post_username}}
           </div>
           <div class="padding_20px width_70vh" >
             <el-form ref="form" v-model="form"  label-width="70px">
@@ -84,9 +77,9 @@ export default {
                 <el-form-item  label="留言">
                   <el-input v-model="form.content" placeholder="请输入留言内容" type="textarea" ></el-input>
                 </el-form-item>
-                <el-form-item  label="头像链接">
+<!--                <el-form-item  label="头像链接">
                   <el-input v-model="form.imgurl" placeholder="请输入您的头像链接"></el-input>
-                </el-form-item>
+                </el-form-item>-->
               <el-form-item>
                 <el-button type="primary" :disabled="!ifallow" @click="onSubmit">提交</el-button>
                 <el-button @click="goback">取消</el-button>

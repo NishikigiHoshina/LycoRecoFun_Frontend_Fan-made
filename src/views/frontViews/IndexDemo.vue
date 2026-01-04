@@ -31,7 +31,7 @@ export default {
 
     axios.post("http://localhost:12808/lycorisfunServer/api/getIndexIMG").then((res)=>{
       console.log(res)
-      this.imglinklist=res.data;
+      this.imglinklist=res.data.data;
     }).catch(function (err){
       console.log(err)
       console.log("找不到方法喵")
@@ -58,7 +58,7 @@ export default {
 <!--      </el-carousel>-->
       <el-carousel :interval="6000" height="60vh" direction="horizontal" :autoplay="true">
         <el-carousel-item v-for="item in imglinklist" :key="item.id">
-          <img style="width: 100%;height: 130%;" :src="item" alt="">
+          <img style="width: 100%;height: 130%;" :src="item.function_link" alt="">
 
 <!--          <div style="text-align: left; position: absolute; bottom:2%; left: 2%; margin: 0;padding: 0">-->
 <!--            <h3>这里是标题</h3>-->
