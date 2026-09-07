@@ -38,6 +38,17 @@ export default {
       }else if(a==='3'){
         return true
       }
+    },
+    roleInfo(){
+      const s=window.localStorage.getItem('status')
+      if(s==='3') return { text:'管理员', admin:true }
+      if(s==='1') return { text:'普通用户', admin:false }
+      if(s==='2') return { text:'已停用', admin:false }
+      return { text:'访客', admin:false }
+    },
+    avatarInitial(){
+      const t=(window.localStorage.getItem('username')||'').trim()
+      return t ? t.charAt(0).toUpperCase() : '?'
     }
   },
   methods: {
@@ -168,7 +179,7 @@ export default {
       <div class="bg-lightgreen">
         <el-col :span="4">
           <div style="text-align: center;">
-            <p>网站图标</p>
+            <p class="brand">网站图标</p>
           </div>
         </el-col>
         <el-col :span="8">
@@ -178,9 +189,9 @@ export default {
                    :default-active="activeIndex"
                    mode="horizontal"
                    @select="handleSelect"
-                   background-color="#9de6cd"
-                   text-color="#1476ea"
-                   active-text-color="#fff"
+                   background-color="#ffffff"
+                   text-color="#4a5560"
+                   active-text-color="#f0555a"
           >
             <el-submenu index="1" :span="2">
               <template slot="title">首页</template>
@@ -234,25 +245,41 @@ export default {
                   :visible.sync="drawer"
                   :direction="direction"
                   :before-close="handleClose"
-                  size="20%"
+                  size="340px"
               >
-                <div style="padding: 7px">
-                  <div v-if="login_status" style="justify-items: center;">
-                    <img :src="avater" style="border-radius: 50%;margin: 10px; width: 70px;height:70px;float: left;"  alt="avater"/>
-                    <h3 ><span style="color: #667eea">{{username}}</span>,欢迎喵!</h3>
-                    <el-button type="primary" @click="logout">退出登录</el-button>
+                <!-- 已登录：个人信息卡 + 功能列表 -->
+                <div v-if="login_status" class="d-body">
+                  <div class="d-head">个人信息</div>
+
+                  <!-- 头像 + 用户名 + 角色 -->
+                  <div class="d-profile">
+                    <span v-if="!avater" class="d-avatar">{{ avatarInitial }}</span>
+                    <span v-else class="d-avatar"><img :src="avater" alt="avatar"/></span>
+                    <div class="d-meta">
+                      <div class="d-name">{{ username }}</div>
+                      <span :class="['d-role', roleInfo.admin ? 'd-role--admin' : '']">{{ roleInfo.text }}</span>
+                    </div>
                   </div>
-                  <div class="clearfix"></div>
 
-                  <hr>
-                  <router-link v-if="user_status" class="el-button--success" to="/homeDemo/index">前往后台</router-link>
+                  <!-- 功能项列表 -->
+                  <div class="d-list">
+                    <router-link class="d-item" to="/Index/personal"><i class="el-icon-user"></i><span>个人主页</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
+                    <router-link class="d-item" to="/Index/set"><i class="el-icon-setting"></i><span>个人设定</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
+                    <router-link class="d-item" to="/Index/message"><i class="el-icon-chat-line-square"></i><span>我要留言</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
+                    <router-link class="d-item" to="/Index/plaza"><i class="el-icon-message"></i><span>留言板</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
+                    <router-link v-if="user_status" class="d-item d-item--admin" to="/homeDemo/index"><i class="el-icon-s-tools"></i><span>前往后台</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
+                  </div>
 
-                  <br>
-<!--                  <router-link class="el-button&#45;&#45;success" to="/Demo">前往课堂测试页</router-link>-->
-                  <br>
-                  <router-link v-if="login_status" class="el-button--primary" to="/Index/personal">个人主页</router-link>
-                  <br>
-                  <el-button v-if="!login_status" type="primary" @click="gologin">登 录</el-button>
+                  <div class="d-foot">
+                    <el-button class="d-logout" @click="logout" plain>退出登录</el-button>
+                  </div>
+                </div>
+
+                <!-- 未登录：引导登录 -->
+                <div v-else class="d-guest">
+                  <i class="el-icon-user d-guest-icon"></i>
+                  <p class="d-guest-text">登录后查看个人中心与更多功能喵</p>
+                  <el-button type="primary" @click="gologin">登 录</el-button>
                 </div>
               </el-drawer>
             </div>
@@ -297,22 +324,37 @@ export default {
   display: inline;
   align-items: center;
   justify-content: center;
-  background-color: #9de6cd;
+  background-color: transparent;
 }
 .el-menu{
   border-bottom: 0px;
 }
 
+/* 顶栏 hover 悬停/激活下划线统一为珊瑚主色 */
+.el-menu--horizontal .el-menu-item:hover,
+.el-menu--horizontal .el-submenu .el-submenu__title:hover {
+  border-bottom: 2px solid #f0555a;
+}
+
+.brand{
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: .14em;
+  color: #f0555a;
+}
+
 .bg-lightgreen{
-  background: #9de6cd;
+  background: #ffffff;
   height: 8vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 2px 14px rgba(0,0,0,.04);
 }
 
 .footer{
-  background-color: #3c4147;
+  background-color: #1f2328;
+  border-top: 4px solid #f0555a;
   padding: 40px;
   height: 30vh;
 }
@@ -324,4 +366,95 @@ export default {
 .padding_20px{
   padding: 20px;
 }
+</style>
+
+<style>
+/* ===== 个人抽屉（el-drawer 渲染到 body，用非 scoped 保证生效） ===== */
+.d-body { padding: 6px 20px 18px; }
+.d-head {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  letter-spacing: .14em;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  margin: 2px 0 16px;
+}
+
+.d-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 4px 2px 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+.d-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  flex: 0 0 58px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-deco-a));
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.d-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.d-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
+.d-name {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: #1a1a1a;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.d-role {
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 2px 9px;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+}
+.d-role--admin {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.d-list { display: flex; flex-direction: column; padding-top: 4px; }
+.d-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 4px;
+  color: #4a5560;
+  text-decoration: none;
+  font-size: 14px;
+  border-bottom: 1px solid #f4f5f7;
+  transition: color .3s var(--ease-main), padding-left .3s var(--ease-main);
+}
+.d-item > i:first-child { color: var(--color-secondary); font-size: 16px; transition: color .3s; }
+.d-item > span { flex: 1; }
+.d-arrow { font-size: 12px; color: #c2c8cf; }
+.d-item:hover { color: var(--color-primary); padding-left: 8px; }
+.d-item:hover > i:first-child { color: var(--color-primary); }
+.d-item--admin { color: var(--color-primary); font-weight: 600; }
+
+.d-foot { margin-top: 18px; text-align: center; }
+.d-logout { width: 100%; }
+
+/* 未登录态 */
+.d-guest { text-align: center; padding: 46px 10px; }
+.d-guest-icon { font-size: 48px; color: #c2c8cf; }
+.d-guest-text { color: var(--color-muted); font-size: 14px; margin: 14px 0 20px; }
 </style>

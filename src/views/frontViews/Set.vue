@@ -43,7 +43,9 @@ export default {
   padding: 20px;
 }
 .card-main{
-  background-color: #cff3f3;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
   margin: 1vh;
   border-radius: 15px;
 }

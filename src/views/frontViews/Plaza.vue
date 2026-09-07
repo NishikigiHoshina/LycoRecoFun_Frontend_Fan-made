@@ -76,7 +76,15 @@ export default {
     },
     gologin(){
       this.$router.push('/Login')
-    }
+    },
+    // lycoris 悬停圆环：由光标位置扩散
+    rippleOn(e){
+      const el=e.currentTarget, rect=el.getBoundingClientRect();
+      el.style.setProperty('--rx', (e.clientX-rect.left)+'px');
+      el.style.setProperty('--ry', (e.clientY-rect.top)+'px');
+      el.classList.add('is-rippling');
+    },
+    rippleOff(e){ e.currentTarget.classList.remove('is-rippling'); },
 
   },
   computed:{
@@ -108,7 +116,7 @@ export default {
       <!--消息区-->
       <div class="padding_20px card-main min-height" >
         <el-row class="padding_20px">
-          <h1 style="text-align: right;color: #159ee6">留言板</h1>
+          <h1 style="text-align: right;color: var(--color-primary)">留言板</h1>
           <hr>
           <el-row>
             <div style="margin: 10px">
@@ -128,13 +136,23 @@ export default {
         </el-row>
         <el-row>
           <el-col :span="24">
-            <div v-if="postinfo && postinfo.length">
+            <!-- 五色加载点 -->
+            <div v-if="loading" class="loader"><i></i><i></i><i></i><i></i><i></i></div>
+
+            <div v-else-if="postinfo && postinfo.length">
               <div class="father">
-                <section v-for="(o,index) in postinfo" :key="o.postid" class="image card" :style="{ backgroundImage: `url(${o.imgurl})`}">
+                <section
+                    v-for="(o,index) in postinfo" :key="o.postid"
+                    class="image card hov-card anim-rise"
+                    :style="{ backgroundImage: `url(${o.imgurl})`, animationDelay: (index % 6) * 0.06 + 's' }"
+                    @mousemove="rippleOn"
+                    @mouseleave="rippleOff"
+                >
+                  <span class="hov-card__ripple"></span>
                   <div class="overlay"></div>
                   <div class="content">
                     <h2>{{o.title}}</h2>
-                    <p>by:{{o.post_username}}</p>
+                    <p class="author-line">by:{{o.post_username}}</p>
                     <time class="time">{{o.created_at}} </time>
                     <el-button type="text" @click="$router.push(`posts/${o.postid}`)">details</el-button>
                   </div>
@@ -142,7 +160,7 @@ export default {
               </div>
 
             </div>
-            <div class="nothingHere" v-else>
+            <div v-else class="nothingHere">
               <h2>{{ searchMode ? '没搜到相关帖子喵' : '暂无帖子喵' }}</h2>
             </div>
           </el-col>
@@ -180,7 +198,7 @@ export default {
 
 <style>
 body{
-  background-color: azure;
+  background-color: var(--color-bg);
 }
 </style>
 <style scoped>
@@ -260,7 +278,9 @@ body{
   margin: 5px;
 }
 .card-main{
-  background-color: #cff3f3;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
   margin: 1vh;
   border-radius: 15px;
 }
@@ -282,7 +302,7 @@ body{
   border-radius:15px;
 
   overflow:hidden;
-  background-color: #74d9ea;
+  background-color: #eef1f4;
   padding: 5px;
   box-shadow: 1px 1px 1px gray;
   transition: 0.1s;
@@ -302,13 +322,23 @@ body{
 .overlay {
   position: absolute;
   inset: 0;
-  background: rgb(255, 255, 255,.5);
+  background: linear-gradient(to top, rgba(255,255,255,.78), rgba(255,255,255,.18));
 }
 .content {
   position: relative;
   z-index: 1;
   padding: 16px;
 }
+.content h2 {
+  font-size: 18px;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+.content .author-line {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+.content .time { color: #909399; display: inline-block; margin-right: 8px; }
 
 .limit{
   width: 200px;

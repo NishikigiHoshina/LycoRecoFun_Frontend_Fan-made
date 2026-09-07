@@ -41,7 +41,14 @@ export default {
 
   },
   methods:{
-
+    // lycoris 悬停圆环：由光标位置扩散
+    rippleOn(e){
+      const el=e.currentTarget, rect=el.getBoundingClientRect();
+      el.style.setProperty('--rx', (e.clientX-rect.left)+'px');
+      el.style.setProperty('--ry', (e.clientY-rect.top)+'px');
+      el.classList.add('is-rippling');
+    },
+    rippleOff(e){ e.currentTarget.classList.remove('is-rippling'); },
   },
 }
 </script>
@@ -68,7 +75,7 @@ export default {
       </el-carousel>
     </el-row>
   </div>
-  <el-divider style="color: #2c70c3;background-color: azure" content-position="left">全站公告</el-divider>
+  <el-divider content-position="left">全站公告</el-divider>
   <div>
     <el-row>
       <h2 v-if="Announcement">
@@ -79,7 +86,7 @@ export default {
       </h2>
     </el-row>
   </div>
-  <el-divider style="color: #2c70c3;background-color: azure" content-position="left">近期新闻</el-divider>
+  <el-divider content-position="left">近期新闻</el-divider>
   <div>
     <el-row>
       <el-col :span="3">
@@ -95,9 +102,13 @@ export default {
                 style="margin-bottom: 80px"
             >
               <div
-                  class="card"
-                  :style="{ backgroundImage: `url(${news.imgurl})` }"
+                  class="card hov-card anim-rise"
+                  :style="{ backgroundImage: `url(${news.imgurl})`, animationDelay: (index % 6) * 0.08 + 's' }"
+                  @mousemove="rippleOn"
+                  @mouseleave="rippleOff"
               >
+                <!-- lycoris 悬停圆环 -->
+                <span class="hov-card__ripple"></span>
                 <!-- hover 才浮现的信息层 -->
                 <div class="info">
                   <h2>{{ news.title }}</h2>
@@ -120,14 +131,14 @@ export default {
       </el-col>
     </el-row>
   </div>
-  <el-divider style="color: #2c70c3;background-color: azure" content-position="center">这里是底线喵</el-divider>
+  <el-divider content-position="center">这里是底线喵</el-divider>
 </div>
 </template>
 
 
 <style>
 body{
-  background-color: azure;
+  background-color: var(--color-bg);
 }
 
 </style>
@@ -225,9 +236,11 @@ body{
   opacity: 1;
 }
 
+.info h2,
 .info h3 {
   margin: 0 0 8px;
   font-size: 16px;
+  color: #fff;
 }
 
 .info .el-button {

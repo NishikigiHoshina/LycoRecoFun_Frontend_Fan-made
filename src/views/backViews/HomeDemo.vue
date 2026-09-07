@@ -27,92 +27,138 @@ export default {
   created() {
     this.typeId=this.$route.query.typeid
     console.log(this.$route.query.typeid)
-  },
-  // beforeRouteEnter(to, from, next){
-  //   let token =localStorage.getItem('token');
-  //   if(!token)next('/Login');
-  //   else next()
-  // }
+  }
 }
-
 </script>
 
 <template>
-  <div id="app">
+  <section>
+    <!-- 页头 -->
+    <header class="page-head">
+      <h1 class="page-title">后台管理</h1>
+      <p class="page-sub">一站式管理本站的帖子 · 用户 · 新闻 · 站内配置</p>
+    </header>
 
-    <div>
-      <section>
-        <div class="bggray">
-          <h3>后台管理</h3>
+    <!-- 管理模块入口 -->
+    <div class="grid">
+      <div class="mod-card mod--1">
+        <div class="mod-top">
+          <span class="mod-icon"><img src="../../img/post.png" alt="post"></span>
+          <div class="mod-title">帖子管理</div>
         </div>
-        <div style="width: 100%; padding: 30px; display: flex; justify-content: center; align-items: center;">
-          <div style="width: 100%">
-            <el-row>
-              <div class="card card1">
-                <h1><img class="img-icon" src="../../img/post.png" alt="icon">帖子管理</h1>
-                <router-link class="noneunderline" to="/homeDemo/PostControl">前往</router-link>
-              </div>
-              <div class="card card2">
-                <h1><img class="img-icon" src="../../img/user.png" alt="icon">用户管理</h1>
-                <router-link class="noneunderline" to="/homeDemo/UserControl">前往</router-link>
-              </div>
-            </el-row>
-            <el-row>
-              <div class="card card3">
-                <h1><img class="img-icon" src="../../img/news.png" alt="icon">新闻管理</h1>
-                <router-link class="noneunderline" to="/homeDemo/NewsControl">前往</router-link>
-              </div>
-              <div class="card card4">
-                <h1><img class="img-icon" src="../../img/site.png" alt="icon">站内管理</h1>
-                <router-link class="noneunderline" to="/homeDemo/SiteControl">前往</router-link>
-              </div>
-            </el-row>
+        <p class="mod-desc">审核、编辑与删除全站帖子</p>
+        <router-link class="mod-go" to="/homeDemo/PostControl">前往管理 <i class="el-icon-arrow-right"></i></router-link>
+      </div>
 
-          </div>
+      <div class="mod-card mod--2">
+        <div class="mod-top">
+          <span class="mod-icon"><img src="../../img/user.png" alt="user"></span>
+          <div class="mod-title">用户管理</div>
         </div>
-      </section>
+        <p class="mod-desc">查看与维护注册用户资料</p>
+        <router-link class="mod-go" to="/homeDemo/UserControl">前往管理 <i class="el-icon-arrow-right"></i></router-link>
+      </div>
+
+      <div class="mod-card mod--3">
+        <div class="mod-top">
+          <span class="mod-icon"><img src="../../img/news.png" alt="news"></span>
+          <div class="mod-title">新闻管理</div>
+        </div>
+        <p class="mod-desc">维护首页近期新闻与轮播素材</p>
+        <router-link class="mod-go" to="/homeDemo/NewsControl">前往管理 <i class="el-icon-arrow-right"></i></router-link>
+      </div>
+
+      <div class="mod-card mod--4">
+        <div class="mod-top">
+          <span class="mod-icon"><img src="../../img/site.png" alt="site"></span>
+          <div class="mod-title">站内管理</div>
+        </div>
+        <p class="mod-desc">公告、宣传图与站点功能开关</p>
+        <router-link class="mod-go" to="/homeDemo/SiteControl">前往管理 <i class="el-icon-arrow-right"></i></router-link>
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped>
-*{
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+.page-head {
+  padding: 6px 2px 22px;
 }
-  .bggray{
-    background-color: #7e9299;
-    color: #f5f7fa
-  }
+.page-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  color: var(--color-text);
+  margin: 0 0 6px;
+  display: inline-block;
+  border-left: 4px solid var(--color-primary);
+  padding-left: 14px;
+}
+.page-sub { color: var(--color-muted); font-size: 14px; margin: 0 0 0 18px; }
 
-  .card{
-    width: 45%;
-    box-shadow: 2px 2px 2px gray;
-    border-radius: 10px;
-    padding: 20px;
-    float: left;
-    color: white;
-    margin: 10px;
-  }
-  .card1{
-    background-color: chartreuse;
-  }
-  .card2{
-    background-color: hotpink;
-  }
-  .card3{
-    background-color: dodgerblue;
-  }
-  .card4{
-    background-color: #d5d536;
-  }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
 
-  .noneunderline{
-    text-decoration: none;
-  }
-  .img-icon{
-    width: 50px;
-    height: 50px;
-  }
+.mod-card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
+  transition: transform .3s var(--ease-main), box-shadow .3s var(--ease-smooth);
+}
+.mod-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .1);
+}
+/* 顶部彩色条 */
+.mod-card::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 4px;
+}
+.mod--1::before { background: var(--color-primary); }
+.mod--2::before { background: var(--color-secondary); }
+.mod--3::before { background: var(--color-deco-a); }
+.mod--4::before { background: var(--color-deco-c); }
+
+.mod-top { display: flex; align-items: center; gap: 14px; }
+.mod-icon {
+  width: 52px; height: 52px; flex: 0 0 52px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.mod--1 .mod-icon { background: rgba(240,85,90,.12); }
+.mod--2 .mod-icon { background: rgba(0,180,170,.12); }
+.mod--3 .mod-icon { background: rgba(42,150,250,.12); }
+.mod--4 .mod-icon { background: rgba(122,86,104,.14); }
+.mod-icon img { width: 30px; height: 30px; object-fit: contain; }
+.mod-title {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.mod-desc {
+  color: var(--color-muted);
+  font-size: 13px;
+  margin: 12px 0 18px;
+}
+.mod-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color .3s var(--ease-main), gap .3s var(--ease-main);
+}
+.mod-go:hover { color: var(--color-primary); gap: 10px; }
+.mod-go i { font-size: 13px; }
 </style>

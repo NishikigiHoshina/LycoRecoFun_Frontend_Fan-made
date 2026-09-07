@@ -134,7 +134,9 @@ export default {
 <style scoped>
 .padding_20px { padding: 20px; }
 .card-main {
-  background-color: #cff3f3;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
   margin: 1vh;
   border-radius: 15px;
 }
@@ -167,7 +169,7 @@ export default {
   background: #f0f0f0;
 }
 .head-info { display: flex; align-items: center; gap: 12px; }
-.uname { color: #1476ea; }
+.uname { color: var(--color-primary); }
 
 .profile-rows { padding: 12px 0; }
 .row {
@@ -188,8 +190,8 @@ export default {
   font-size: 15px;
   word-break: break-all;
 }
-.link { color: #1476ea; text-decoration: none; }
-.link:hover { text-decoration: underline; }
+.link { color: var(--color-secondary); text-decoration: none; }
+.link:hover { color: var(--color-primary); text-decoration: underline; }
 
 .profile-foot { margin-top: 20px; text-align: right; }
 </style>

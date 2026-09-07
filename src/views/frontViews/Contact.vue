@@ -101,7 +101,9 @@ export default {
   padding: 20px;
 }
 .card-main {
-  background-color: #cff3f3;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
   margin: 1vh;
   border-radius: 15px;
 }
@@ -136,7 +138,7 @@ export default {
 }
 .email-icon {
   font-size: 36px;
-  color: #1476ea;
+  color: var(--color-secondary);
 }
 .email-info {
   flex: 1;
@@ -150,11 +152,12 @@ export default {
 .email-value {
   font-size: 20px;
   font-weight: 600;
-  color: #1476ea;
+  color: var(--color-secondary);
   text-decoration: none;
   word-break: break-all;
 }
 .email-value:hover {
+  color: var(--color-primary);
   text-decoration: underline;
 }
 .email-placeholder {

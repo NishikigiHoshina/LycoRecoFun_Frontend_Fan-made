@@ -261,6 +261,87 @@ export default {
 </template>
 
 <style scoped>
+/* ---- 页面标题 ---- */
+h1 {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  color: var(--color-primary);
+  margin: 2px 0;
+  padding-left: 14px;
+  border-left: 4px solid var(--color-primary);
+}
+hr { margin: 10px 0 18px; }
+
+/* ---- 小节标题 ---- */
+h3 {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 10px;
+}
+h3::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--color-primary);
+}
+h4 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4a5560;
+  margin: 0;
+}
+
+/* ---- 功能区白色行卡 ---- */
+section {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .04);
+  padding: 16px 20px;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: box-shadow .3s var(--ease-smooth);
+}
+section:hover { box-shadow: 0 10px 26px rgba(0, 0, 0, .08); }
+
+/* ---- 公告文本框 ---- */
+textarea {
+  width: 60%;
+  min-height: 96px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-text);
+  resize: vertical;
+  outline: none;
+}
+textarea:focus { border-color: var(--color-secondary); }
+
+/* ---- 宣传图白卡条 ---- */
+.clearfix {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .04);
+  padding: 16px;
+  margin: 12px 0;
+}
+.clearfix img {
+  border-radius: 6px;
+  margin: 0 10px 10px 0;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+}
 .clearfix::after {
   content: '';
   display: block;
@@ -268,14 +349,14 @@ export default {
 }
 
 .avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 10px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
 }
 .avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
+  border-color: var(--color-secondary);
 }
 .avatar-uploader-icon {
   font-size: 28px;

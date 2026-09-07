@@ -64,7 +64,7 @@ export default {
         <div class="padding_20px card-main" >
           <el-row class="padding_20px">
             <div style="text-align: right">
-              <h1 style="text-align: right;color: #159ee6">发帖</h1>
+              <h1 style="text-align: right;color: var(--color-primary)">发帖</h1>
               <hr>
             </div>
             <div class="padding_20px" >
@@ -104,7 +104,9 @@ export default {
 }
 
 .card-main{
-  background-color: #cff3f3;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
   margin: 1vh;
   border-radius: 15px;
   min-height: 60vh;

@@ -75,7 +75,7 @@ export default {
 }
 .reply-main{ flex: 1; min-width: 0; }
 .reply-head{ display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
-.name{ font-size: 13px; font-weight: 600; color: #576b95; }
+.name{ font-size: 13px; font-weight: 600; color: var(--color-secondary); }
 .time{ font-size: 12px; color: #bbb; }
 .cnt{ font-size: 14px; line-height: 1.6; color: #2c3e50; word-break: break-word; }
 .empty-reply{ font-size: 13px; color: #bbb; padding: 4px 0; }

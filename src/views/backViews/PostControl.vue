@@ -87,7 +87,7 @@ export default{
         </tr>
         </thead>
           <tr  v-for="post in postlist" :key="post.postid">
-            <td style="border:1px solid">{{post.postid}}</td>
+            <td>{{post.postid}}</td>
             <td>{{post.title}}</td>
             <td>{{post.content}}</td>
             <td>{{post.created_at}}</td>
@@ -177,34 +177,40 @@ export default{
 </template>
 
 <style scoped>
+h2 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--color-primary);
+  margin: 2px 0;
+  padding-left: 14px;
+  border-left: 4px solid var(--color-primary);
+}
+hr { margin: 10px 0 18px; }
+
 table {
   border-collapse: collapse;
-  width: 80%;
-  margin: 20px auto;
-  font-family: Arial, sans-serif;
+  width: 97%;
+  margin: 0 auto 26px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .06);
 }
-
-th, td {
-  padding: 10px 15px;
-  text-align: left;
-}
-
-/* 表头双边框 */
+th, td { padding: 12px 16px; text-align: left; }
 th {
-  position: relative;
-  border: 1px solid #ccc;
-  background-color: #f5f5f5;
-  outline: 1px solid #000;
-  outline-offset: -2px;
+  background: #fff5f5;
+  color: var(--color-primary);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-primary);
+  white-space: nowrap;
 }
-
-/* 普通单元格单边框 */
 td {
-  border: 1px solid #ccc;
+  border-bottom: 1px solid #f1f3f5;
+  color: #4a5560;
+  font-size: 14px;
+  word-break: break-word;
 }
-
-/* 可选：鼠标悬行高亮 */
-tr:hover {
-  background-color: #f9f9f9;
-}
+tbody tr:hover { background: #fafcfd; }
+tbody tr:last-child td { border-bottom: none; }
 </style>
