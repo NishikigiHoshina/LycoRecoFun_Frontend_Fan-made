@@ -1,6 +1,6 @@
 # Posts — 前台 SPA
 
-本站点的**前端单页应用**，面向用户的前台 + 面向管理员的后台整合在一个 Vue 项目里，后端为 `lycorisfunServer`（Spring Boot 3）。UI 采用 **lycoris-recoil 风格**（Level 2：配色 + 组件级交互，锐角、角色色悬停），并内置**浅色 / 深色**双主题。
+本站点的**前端单页应用**，面向用户的前台 + 面向管理员的后台整合在一个 Vue 项目里，后端为 `lycorisfunServer`（Spring Boot 3）。内置**浅色 / 深色**双主题。
 
 > package.json 内 `name` 为 `news`（历史遗留），与目录名 `posts` 不一致。
 
@@ -120,7 +120,7 @@ src/
 
 ---
 
-## 样式体系（lycoris-recoil · Level 2）
+## 样式体系
 
 `src/styles/lycoris.css` 定义了整套设计层，**后台/前台共用**：
 
@@ -134,12 +134,4 @@ src/
 
 ---
 
-## 备注 / 待办
 
-- **状态管理**：Vuex 未实际使用，登录态依赖 `localStorage`（明文）。计划后续迁移为 **cookie 加密存储**，现阶段**不动**。
-- **安全待办**：评论/发帖的 `post_userid` 目前由前端传值、后端未用 token 校验/覆盖（个人中心 `/getMyProfile` 已是服务端从 token 推导的正确写法）。计划随 cookie 化一并改为服务端推导。
-- **点赞**（`components/comment/LikeBtn`）为占位，未对接后端写接口；`like_count` 目前仅读数据库静态值。
-- 预留空壳页：`Gallery`（图集）。
-- 后端接口地址、数据库口令等以 `lycorisfunServer` 的 `application.properties` 为准。
-
-> 详细目录结构见工作区根目录的 `前端项目结构说明(posts).md`。
