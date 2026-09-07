@@ -140,9 +140,11 @@ export default {
 
 .posts-page{ padding: 10px 0; }
 
-/* 外层薄荷色卡，与站点风格一致 */
+/* 外层卡：白表面 + 细边 + 投影 */
 .card-main{
-  background-color: #cff3f3;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
   padding: 24px;
   border-radius: 15px;
   margin: 1vh;
@@ -161,7 +163,7 @@ export default {
 
 /* 文章白卡 */
 .article-card{
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 14px;
   padding: 36px 40px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
@@ -171,7 +173,7 @@ export default {
 .title{
   font-size: 30px;
   font-weight: 700;
-  color: #1f2d3d;
+  color: var(--color-text);
   line-height: 1.4;
   margin-bottom: 16px;
 }
@@ -182,31 +184,43 @@ export default {
   flex-wrap: wrap;
   gap: 12px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-canvas);
 }
 .author{ display: flex; align-items: center; gap: 12px; }
 .author-avatar{
   width: 42px; height: 42px; border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #159ee6 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-deco-a) 100%);
   color: #fff; font-size: 18px; font-weight: 600;
   display: flex; align-items: center; justify-content: center;
 }
 .author-info{ display: flex; flex-direction: column; gap: 2px; }
-.author-name{ font-size: 15px; font-weight: 600; color: #1476ea; }
-.post-date{ font-size: 13px; color: #999; }
+.author-name{ font-size: 15px; font-weight: 600; color: var(--color-secondary); }
+.post-date{ font-size: 13px; color: var(--color-muted); }
 .tags{ display: flex; gap: 6px; flex-wrap: wrap; }
+.tags .el-tag{
+  background: transparent;
+  color: var(--color-secondary);
+  border-color: var(--color-secondary);
+  transition: background .3s var(--ease-main), color .3s var(--ease-main), border-color .3s var(--ease-main);
+}
+.tags .el-tag:hover{
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
 
 /* 正文 */
 .article-body{
   font-size: 16px;
   line-height: 1.85;
-  color: #2c3e50;
+  color: var(--color-text);
   margin: 20px 0;
   word-break: break-word;
 }
 .article-body::v-deep img{ max-width: 100%; height: auto; border-radius: 6px; }
 .article-body::v-deep p{ margin: 0 0 1em; }
-.article-body::v-deep a{ color: #1476ea; }
+.article-body::v-deep a{ color: var(--color-secondary); }
+.article-body::v-deep a:hover{ color: var(--color-primary); }
 
 .article-image{
   margin: 20px 0;
@@ -221,9 +235,9 @@ export default {
 
 .article-link{ margin: 16px 0; }
 .article-link a{
-  color: #1476ea; text-decoration: none; font-size: 14px;
+  color: var(--color-secondary); text-decoration: none; font-size: 14px;
 }
-.article-link a:hover{ text-decoration: underline; }
+.article-link a:hover{ color: var(--color-primary); text-decoration: underline; }
 
 /* 底部统计 */
 .article-footer{
@@ -231,11 +245,11 @@ export default {
   gap: 24px;
   padding-top: 18px;
   margin-top: 8px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--color-canvas);
 }
 .stat{
   display: flex; align-items: center; gap: 6px;
-  font-size: 14px; color: #909399;
+  font-size: 14px; color: var(--color-muted);
 }
 .stat i{ font-size: 16px; }
 
@@ -243,15 +257,15 @@ export default {
 .empty-state{
   text-align: center;
   padding: 80px 20px;
-  color: #909399;
+  color: var(--color-muted);
 }
-.empty-state i{ font-size: 48px; color: #c0c4cc; }
+.empty-state i{ font-size: 48px; color: var(--color-muted); }
 .empty-state p{ margin: 12px 0 20px; font-size: 15px; }
 
 /* 评论区 */
 .comment-section{
   margin-top: 24px;
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 14px;
   padding: 24px 28px;
   box-shadow: 0 4px 18px rgba(0,0,0,0.06);
@@ -262,9 +276,9 @@ export default {
 }
 .section-title .bar{
   width: 4px; height: 18px; border-radius: 2px;
-  background: linear-gradient(135deg, #667eea, #159ee6);
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
 }
-.section-title h2{ font-size: 18px; color: #1f2d3d; }
+.section-title h2{ font-size: 18px; color: var(--color-text); }
 
 /* 移动端适配 */
 @media (max-width: 768px){

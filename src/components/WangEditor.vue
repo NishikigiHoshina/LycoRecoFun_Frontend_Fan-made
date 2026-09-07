@@ -31,7 +31,7 @@ export default {
 </script>
 <style src="@wangeditor/editor/dist/css/style.css"></style>
 <template>
-  <div style="border: 1px solid #ccc">
+  <div style="border: 1px solid var(--color-border)">
     <Toolbar :editor="editor" :defaultConfig="toolbarConfig" :mode="mode" />
     <!-- 把外部 value 传进来，变化时回抛 -->
     <Editor

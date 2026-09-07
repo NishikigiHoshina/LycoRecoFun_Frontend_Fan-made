@@ -132,13 +132,14 @@ export default {
 <style scoped>
 .post-comment { padding: 12px 0; }
 .comment-editor { margin-bottom: 16px; }
-.list-header { font-size: 14px; color: #999; margin-bottom: 12px; }
+.list-header { font-size: 14px; color: var(--color-muted); margin-bottom: 12px; }
 .comment-item { display: flex; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
 .avatar { width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; }
 .right-box { flex: 1; }
-.username { font-size: 14px; color: #576b95; margin-bottom: 4px; }
+.username { font-size: 14px; color: var(--color-secondary); margin-bottom: 4px; }
 .content { font-size: 14px; line-height: 1.6; }
-.footer { font-size: 12px; color: #999; margin-top: 6px; }
-.load-more { text-align: center; padding: 10px; color: #409EFF; cursor: pointer; }
-.empty { text-align: center; padding: 50px; color: darkturquoise; }
+.footer { font-size: 12px; color: var(--color-muted); margin-top: 6px; }
+.load-more { text-align: center; padding: 10px; color: var(--color-secondary); cursor: pointer; }
+.load-more:hover { color: var(--color-primary); }
+.empty { text-align: center; padding: 50px; color: var(--color-muted); }
 </style>

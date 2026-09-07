@@ -212,12 +212,12 @@ export default {
   transition:all .3s;
 }
 .btn-prim{
-  background:linear-gradient(45deg,#667eea 0%,#764ba2 100%);
+  background:linear-gradient(45deg,var(--color-secondary) 0%,var(--color-primary) 100%);
   color:#fff;
 }
 .btn-prim:hover{
   transform:translateY(-2px);
-  box-shadow:0 5px 18px rgba(102,126,234,.45);
+  box-shadow:0 5px 18px rgba(240,85,90,.45);
 }
 .btn-ghost{
   margin-top:15px;
@@ -238,7 +238,7 @@ export default {
   background .6s cubic-bezier(.4,0,.2,1);
   /* 初始盖住右侧注册面板 */
   transform:translateX(0);
-  background: rgb(0, 182, 112,.25);
+  background: rgba(0, 180, 170,.22);
   /*background:linear-gradient(135deg, rgb(22, 103, 72) 0%, rgb(58, 87, 89) 100%);*/
   backdrop-filter:blur(12px);
   border-radius:18px;
@@ -248,7 +248,7 @@ export default {
 /* Vue 切换类：滑到左侧盖住登录面板 */
 .frame.show-login .mask{
   transform:translateX(400px);
-  background: rgb(0, 161, 88,.25);
+  background: rgba(240, 85, 90,.2);
   /*background:linear-gradient(135deg,rgba(80,200,220) 0%,rgba(180,220,80) 100%);*/
 }
 .mask h3{

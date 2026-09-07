@@ -46,7 +46,7 @@ export default {
         <p>&nbsp;</p>
       </el-col>
       <el-col :span="20">
-        <!-- 主体卡片，沿用 Set.vue 的 .card-main 样式 -->
+        <!-- 主体卡片：统一卡片样式 -->
         <div class="padding_20px card-main min-height">
           <!-- 标题 -->
           <el-row class="padding_20px">
@@ -96,12 +96,14 @@ export default {
 </template>
 
 <style scoped>
-/* 与 Set.vue 保持一致的卡片样式 */
+/* 统一卡片样式 */
 .padding_20px {
   padding: 20px;
 }
 .card-main {
-  background-color: #cff3f3;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
   margin: 1vh;
   border-radius: 15px;
 }
@@ -110,18 +112,18 @@ export default {
 }
 
 .contact-body {
-  color: #3c4147;
+  color: var(--color-text);
 }
 .intro {
   font-size: 15px;
   line-height: 1.8;
   margin-bottom: 24px;
-  color: #5a6066;
+  color: var(--color-text);
 }
 
 /* 邮箱联系卡 */
 .email-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
@@ -136,7 +138,7 @@ export default {
 }
 .email-icon {
   font-size: 36px;
-  color: #1476ea;
+  color: var(--color-secondary);
 }
 .email-info {
   flex: 1;
@@ -144,32 +146,33 @@ export default {
 }
 .email-label {
   font-size: 13px;
-  color: #999;
+  color: var(--color-muted);
   margin-bottom: 4px;
 }
 .email-value {
   font-size: 20px;
   font-weight: 600;
-  color: #1476ea;
+  color: var(--color-secondary);
   text-decoration: none;
   word-break: break-all;
 }
 .email-value:hover {
+  color: var(--color-primary);
   text-decoration: underline;
 }
 .email-placeholder {
-  color: #c0c4cc;
+  color: var(--color-muted);
   font-weight: 400;
 }
 .email-tip {
   font-size: 13px;
-  color: #909399;
+  color: var(--color-muted);
   margin: 0;
 }
 
 .note-list {
   padding-left: 20px;
   line-height: 1.9;
-  color: #5a6066;
+  color: var(--color-text);
 }
 </style>
