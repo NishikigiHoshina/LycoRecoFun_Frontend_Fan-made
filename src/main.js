@@ -11,6 +11,9 @@ import './styles/lycoris.css';
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 // Vue.prototype.$axios = axios
+// 尽早应用存储的主题，避免首帧闪白/闪黑
+import { initTheme } from './utils/theme';
+initTheme();
 new Vue({
   router,
   store,

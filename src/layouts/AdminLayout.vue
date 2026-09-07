@@ -64,7 +64,7 @@
 
 <script>
 export default {
-  name: 'homeLayout',
+  name: 'AdminLayout',
   data() {
     return { collapsed: false };
   },
@@ -82,14 +82,14 @@ export default {
 .layout {
   min-height: 100vh;
   display: flex;
-  background: #f5f6f8;
+  background: var(--color-canvas);
 }
 
 /* ===== 左侧导航栏 ===== */
 .side-nav {
   width: 236px;
   flex-shrink: 0;
-  background: #fff;
+  background: var(--color-surface);
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
@@ -115,7 +115,7 @@ export default {
   font-size: 18px;
   letter-spacing: .08em;
   white-space: nowrap;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 .side-nav.collapsed .brand-name,
 .side-nav.collapsed .nav-label,
@@ -137,7 +137,7 @@ export default {
   gap: 13px;
   padding: 12px 14px;
   border-radius: 10px;
-  color: #4a5560;
+  color: var(--color-text);
   text-decoration: none;
   font-size: 14px;
   white-space: nowrap;
@@ -159,9 +159,9 @@ export default {
 .nav-link:nth-of-type(3)::before { background: var(--color-deco-a); }
 .nav-link:nth-of-type(4)::before { background: var(--color-deco-b); }
 .nav-link:nth-of-type(5)::before { background: var(--color-deco-c); }
-.nav-back::before { background: #c2c8cf; }
+.nav-back::before { background: var(--color-muted); }
 
-.nav-link:hover { background: #fff4f4; color: var(--color-primary); }
+.nav-link:hover { background: var(--color-surface)4f4; color: var(--color-primary); }
 .nav-link:hover::before { transform: scale(1.3); }
 
 /* 激活态：浅红渐变 + 珊瑚字 + 左侧强调条 */
@@ -240,7 +240,7 @@ export default {
 
 .top-bar {
   height: 64px;
-  background: #fff;
+  background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
@@ -262,7 +262,7 @@ export default {
 .crumb-title {
   font-family: var(--font-serif);
   font-size: 15px;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 .top-right {
   display: flex;
@@ -284,7 +284,7 @@ export default {
   padding: 22px 26px;
   overflow: auto;
   min-height: 0;
-  background: #f5f6f8;
+  background: var(--color-canvas);
 }
 
 /* 窄屏收起 */

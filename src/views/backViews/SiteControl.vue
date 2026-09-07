@@ -276,7 +276,7 @@ hr { margin: 10px 0 18px; }
 h3 {
   font-family: var(--font-serif);
   font-size: 16px;
-  color: #1a1a1a;
+  color: var(--color-text);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -292,13 +292,13 @@ h3::before {
 h4 {
   font-size: 14px;
   font-weight: 500;
-  color: #4a5560;
+  color: var(--color-text);
   margin: 0;
 }
 
 /* ---- 功能区白色行卡 ---- */
 section {
-  background: #fff;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, .04);
@@ -329,7 +329,7 @@ textarea:focus { border-color: var(--color-secondary); }
 
 /* ---- 宣传图白卡条 ---- */
 .clearfix {
-  background: #fff;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, .04);
@@ -360,7 +360,7 @@ textarea:focus { border-color: var(--color-secondary); }
 }
 .avatar-uploader-icon {
   font-size: 28px;
-  color: #8c939d;
+  color: var(--color-muted);
   width: 178px;
   height: 178px;
   line-height: 178px;

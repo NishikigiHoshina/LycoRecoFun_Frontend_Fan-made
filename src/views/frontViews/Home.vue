@@ -2,7 +2,7 @@
 import axios from "axios";
 
 export default {
-  name:"IndexDemo",
+  name:"Home",
   data(){
     return{
       // currentDate: new Date(),
@@ -180,7 +180,7 @@ body{
 
 .time {
   font-size: 13px;
-  color: #999;
+  color: var(--color-muted);
 }
 
 .bottom {

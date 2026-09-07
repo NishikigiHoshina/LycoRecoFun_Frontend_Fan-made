@@ -183,14 +183,14 @@ table {
   border-collapse: collapse;
   width: 97%;
   margin: 0 auto 26px;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 8px 28px rgba(0, 0, 0, .06);
 }
 th, td { padding: 12px 16px; text-align: left; }
 th {
-  background: #fff5f5;
+  background: var(--color-surface)5f5;
   color: var(--color-primary);
   font-family: var(--font-serif);
   font-weight: 600;
@@ -198,11 +198,11 @@ th {
   white-space: nowrap;
 }
 td {
-  border-bottom: 1px solid #f1f3f5;
-  color: #4a5560;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
   font-size: 14px;
   word-break: break-word;
 }
-tbody tr:hover { background: #fafcfd; }
+tbody tr:hover { background: var(--color-surface-hover); }
 tbody tr:last-child td { border-bottom: none; }
 </style>

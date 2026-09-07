@@ -163,7 +163,7 @@ export default {
 
 /* 文章白卡 */
 .article-card{
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 14px;
   padding: 36px 40px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
@@ -173,7 +173,7 @@ export default {
 .title{
   font-size: 30px;
   font-weight: 700;
-  color: #1f2d3d;
+  color: var(--color-text);
   line-height: 1.4;
   margin-bottom: 16px;
 }
@@ -184,7 +184,7 @@ export default {
   flex-wrap: wrap;
   gap: 12px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-canvas);
 }
 .author{ display: flex; align-items: center; gap: 12px; }
 .author-avatar{
@@ -195,7 +195,7 @@ export default {
 }
 .author-info{ display: flex; flex-direction: column; gap: 2px; }
 .author-name{ font-size: 15px; font-weight: 600; color: var(--color-secondary); }
-.post-date{ font-size: 13px; color: #999; }
+.post-date{ font-size: 13px; color: var(--color-muted); }
 .tags{ display: flex; gap: 6px; flex-wrap: wrap; }
 .tags .el-tag{
   background: transparent;
@@ -213,7 +213,7 @@ export default {
 .article-body{
   font-size: 16px;
   line-height: 1.85;
-  color: #2c3e50;
+  color: var(--color-text);
   margin: 20px 0;
   word-break: break-word;
 }
@@ -245,11 +245,11 @@ export default {
   gap: 24px;
   padding-top: 18px;
   margin-top: 8px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--color-canvas);
 }
 .stat{
   display: flex; align-items: center; gap: 6px;
-  font-size: 14px; color: #909399;
+  font-size: 14px; color: var(--color-muted);
 }
 .stat i{ font-size: 16px; }
 
@@ -257,15 +257,15 @@ export default {
 .empty-state{
   text-align: center;
   padding: 80px 20px;
-  color: #909399;
+  color: var(--color-muted);
 }
-.empty-state i{ font-size: 48px; color: #c0c4cc; }
+.empty-state i{ font-size: 48px; color: var(--color-muted); }
 .empty-state p{ margin: 12px 0 20px; font-size: 15px; }
 
 /* 评论区 */
 .comment-section{
   margin-top: 24px;
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 14px;
   padding: 24px 28px;
   box-shadow: 0 4px 18px rgba(0,0,0,0.06);
@@ -278,7 +278,7 @@ export default {
   width: 4px; height: 18px; border-radius: 2px;
   background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
 }
-.section-title h2{ font-size: 18px; color: #1f2d3d; }
+.section-title h2{ font-size: 18px; color: var(--color-text); }
 
 /* 移动端适配 */
 @media (max-width: 768px){

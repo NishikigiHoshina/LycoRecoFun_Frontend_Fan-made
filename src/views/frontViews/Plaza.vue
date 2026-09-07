@@ -1,7 +1,5 @@
 <script>
 import axios from "axios";
-import {left} from "core-js/internals/array-reduce";
-import searchResult from "@/views/frontViews/SearchResult.vue";
 export default {
   name:'Plaza',
   data(){
@@ -238,7 +236,7 @@ body{
 
 .time {
   font-size: 13px;
-  color: #999;
+  color: var(--color-muted);
 }
 
 .bottom {
@@ -302,7 +300,7 @@ body{
   border-radius:15px;
 
   overflow:hidden;
-  background-color: #eef1f4;
+  background-color: var(--color-canvas);
   padding: 5px;
   box-shadow: 1px 1px 1px gray;
   transition: 0.1s;
@@ -331,14 +329,14 @@ body{
 }
 .content h2 {
   font-size: 18px;
-  color: #1a1a1a;
+  color: var(--color-text);
   margin-bottom: 4px;
 }
 .content .author-line {
   color: var(--color-secondary);
   font-weight: 600;
 }
-.content .time { color: #909399; display: inline-block; margin-right: 8px; }
+.content .time { color: var(--color-muted); display: inline-block; margin-right: 8px; }
 
 .limit{
   width: 200px;

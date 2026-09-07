@@ -149,7 +149,7 @@ export default {
 .nothingHere { height: 50vh; }
 
 .profile-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 12px;
   padding: 28px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
@@ -159,14 +159,14 @@ export default {
   align-items: center;
   gap: 20px;
   padding-bottom: 20px;
-  border-bottom: 1px dashed #e0e0e0;
+  border-bottom: 1px dashed var(--color-border);
 }
 .avatar {
   width: 80px;
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  background: #f0f0f0;
+  background: var(--color-canvas);
 }
 .head-info { display: flex; align-items: center; gap: 12px; }
 .uname { color: var(--color-primary); }
@@ -175,18 +175,18 @@ export default {
 .row {
   display: flex;
   padding: 12px 4px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-canvas);
 }
 .row:last-child { border-bottom: none; }
 .label {
   width: 100px;
   flex-shrink: 0;
-  color: #909399;
+  color: var(--color-muted);
   font-size: 14px;
 }
 .value {
   flex: 1;
-  color: #3c4147;
+  color: var(--color-text);
   font-size: 15px;
   word-break: break-all;
 }

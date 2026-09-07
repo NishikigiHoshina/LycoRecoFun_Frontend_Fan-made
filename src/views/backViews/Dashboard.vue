@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: "HomeDemo",
+  name: "Dashboard",
   data(){
     return{
       typeId:0
@@ -15,13 +15,13 @@ export default {
     },
     jumptoValue(){
       this.$router.push({
-        name: 'homedemoValue',      // 父路由 name 即可
-        params: { value: 39 }  // 自动拼成 /homeDemo/value/39
+        name: 'valueDemo',      // /homeDemo/value/:value
+        params: { value: 39 }
       })
     },
     jumptocover(){
       this.$router.push({
-        name: 'indexDemo'})
+        name: 'SiteHome'})      // /Index
     }
   },
   created() {
@@ -102,7 +102,7 @@ export default {
 }
 
 .mod-card {
-  background: #fff;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 14px;
   padding: 22px;
@@ -142,7 +142,7 @@ export default {
   font-family: var(--font-serif);
   font-size: 19px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 .mod-desc {
   color: var(--color-muted);

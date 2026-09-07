@@ -1,7 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-const collapsed = ref(false)
-</script>
 <script>
 import axios from "axios";
 
@@ -9,7 +5,6 @@ export default {
   data() {
     return {
       activeIndex: '1',
-      input: '',
       drawer: false,
       direction: 'rtl',
       connect_status:true,
@@ -118,12 +113,6 @@ export default {
         this.$router.push('/Index/write')
       }
     },
-    linktoset(){
-      const { path } = this.$route
-      if (path !== '/Index/set') {
-        this.$router.push('/Index/set')
-      }
-    },
     linktogallery(){
       const { path } = this.$route
       if (path !== '/Index/gallery') {
@@ -179,7 +168,8 @@ export default {
       <div class="bg-lightgreen">
         <el-col :span="4">
           <div style="text-align: center;">
-            <p class="brand">网站图标</p>
+            <img class="brand-img logo-light" src="@/assets/header.png" alt="站点 logo"/>
+            <img class="brand-img logo-dark" src="@/assets/header_dark.png" alt="站点 logo"/>
           </div>
         </el-col>
         <el-col :span="8">
@@ -189,9 +179,6 @@ export default {
                    :default-active="activeIndex"
                    mode="horizontal"
                    @select="handleSelect"
-                   background-color="#ffffff"
-                   text-color="#4a5560"
-                   active-text-color="#f0555a"
           >
             <el-submenu index="1" :span="2">
               <template slot="title">首页</template>
@@ -215,7 +202,6 @@ export default {
 
             <el-submenu :disabled="!database_status" index="3" :span="2" title="还在施工喵">
               <template slot="title">资料</template>
-              <el-menu-item index="3-1" @click="linktoset">设定</el-menu-item>
               <el-menu-item index="3-2" @click="linktogallery">图集</el-menu-item>
               <el-menu-item index="3-3" @click="linktoseccreate">二创</el-menu-item>
             </el-submenu>
@@ -226,13 +212,7 @@ export default {
           </el-menu>
 
         </el-col>
-        <el-col :span="6">
-          <div style="display: flex; justify-content: center; align-items: center;">
-            <el-input v-model="input" placeholder="请输入内容"></el-input>
-            <el-button type="primary" icon="el-icon-search">搜索</el-button>
-          </div>
-        </el-col>
-        <el-col :span="6">
+        <el-col :span="12">
           <div style="display: flex; justify-content: right; align-items: center;">
 <!--            <p>账号状态栏</p>-->
             <el-button @click="drawer = true" type="primary" style="margin-left: 20px;">
@@ -264,7 +244,6 @@ export default {
                   <!-- 功能项列表 -->
                   <div class="d-list">
                     <router-link class="d-item" to="/Index/personal"><i class="el-icon-user"></i><span>个人主页</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
-                    <router-link class="d-item" to="/Index/set"><i class="el-icon-setting"></i><span>个人设定</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
                     <router-link class="d-item" to="/Index/message"><i class="el-icon-chat-line-square"></i><span>我要留言</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
                     <router-link class="d-item" to="/Index/plaza"><i class="el-icon-message"></i><span>留言板</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
                     <router-link v-if="user_status" class="d-item d-item--admin" to="/homeDemo/index"><i class="el-icon-s-tools"></i><span>前往后台</span><i class="el-icon-arrow-right d-arrow"></i></router-link>
@@ -304,7 +283,7 @@ export default {
       <div class="footer">
         <el-row>
           <div >
-            <a style="color: white; text-decoration: #3c4147" href="">萌备号:00000000</a>
+            <a style="color: white; text-decoration: var(--color-text)" href="">萌备号:00000000</a>
           </div>
         </el-row>
       </div>
@@ -336,15 +315,16 @@ export default {
   border-bottom: 2px solid #f0555a;
 }
 
-.brand{
-  font-family: var(--font-serif);
-  font-weight: 700;
-  letter-spacing: .14em;
-  color: #f0555a;
+.brand-img{
+  height: 42px;
+  max-width: 176px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .bg-lightgreen{
-  background: #ffffff;
+  background: var(--color-surface);
   height: 8vh;
   display: flex;
   justify-content: center;
@@ -413,7 +393,7 @@ export default {
   font-family: var(--font-serif);
   font-size: 19px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text);
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -437,15 +417,15 @@ export default {
   align-items: center;
   gap: 12px;
   padding: 14px 4px;
-  color: #4a5560;
+  color: var(--color-text);
   text-decoration: none;
   font-size: 14px;
-  border-bottom: 1px solid #f4f5f7;
+  border-bottom: 1px solid var(--color-border);
   transition: color .3s var(--ease-main), padding-left .3s var(--ease-main);
 }
 .d-item > i:first-child { color: var(--color-secondary); font-size: 16px; transition: color .3s; }
 .d-item > span { flex: 1; }
-.d-arrow { font-size: 12px; color: #c2c8cf; }
+.d-arrow { font-size: 12px; color: var(--color-muted); }
 .d-item:hover { color: var(--color-primary); padding-left: 8px; }
 .d-item:hover > i:first-child { color: var(--color-primary); }
 .d-item--admin { color: var(--color-primary); font-weight: 600; }
@@ -455,6 +435,6 @@ export default {
 
 /* 未登录态 */
 .d-guest { text-align: center; padding: 46px 10px; }
-.d-guest-icon { font-size: 48px; color: #c2c8cf; }
+.d-guest-icon { font-size: 48px; color: var(--color-muted); }
 .d-guest-text { color: var(--color-muted); font-size: 14px; margin: 14px 0 20px; }
 </style>

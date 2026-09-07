@@ -44,8 +44,8 @@ export default {
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose"
-          background-color="#ffffff"
-          text-color="#4a5560"
+          background-color="var(--color-surface)"
+          text-color="var(--color-text)"
           active-text-color="#f0555a">
         <el-submenu index="1">
           <template slot="title">

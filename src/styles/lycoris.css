@@ -290,3 +290,203 @@ a:hover { color: var(--color-primary); }
 .toggle-bar {
   border-radius: 0 !important;
 }
+
+/* ============================================================
+   语义令牌（中性色 —— 深色/浅色切换只动这些）
+   ============================================================ */
+:root {
+  --color-canvas:       #f5f6f8;   /* 页面/内容底衬（浅色灰底） */
+  --color-surface-hover:#eef0f3;   /* 悬停/斑马浅层 */
+  --color-inset:        #f6f8fa;   /* 更低一层的内凹 */
+}
+
+/* 顶栏/内容底衬走令牌 */
+html { background: var(--color-bg); }
+
+/* 主题切换浮层按钮 */
+.theme-fab {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 3000;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
+  transition: transform .3s var(--ease-smooth), color .3s var(--ease-main), background .3s var(--ease-main);
+}
+.theme-fab:hover { transform: translateY(-2px); color: var(--color-primary); }
+.theme-fab:active { transform: translateY(0); }
+
+/* 顶部横向菜单：改用令牌着色（去掉内联色后由 CSS 接管） */
+.el-menu--horizontal { background: transparent !important; border-bottom: none !important; }
+.el-menu--horizontal > .el-menu-item,
+.el-menu--horizontal > .el-submenu > .el-submenu__title { color: var(--color-muted); }
+.el-menu--horizontal > .el-menu-item:hover,
+.el-menu--horizontal > .el-submenu > .el-submenu__title:hover,
+.el-menu--horizontal > .el-menu-item:focus,
+.el-menu--horizontal > .el-submenu > .el-submenu__title:focus {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+}
+.el-menu--horizontal > .el-menu-item.is-active,
+.el-menu--horizontal > .el-submenu.is-active > .el-submenu__title {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+}
+.el-menu--horizontal .el-menu-item.is-disabled { color: var(--color-border-strong) !important; }
+
+/* 下拉子菜单容器 */
+.el-menu--popup { background: var(--color-surface); }
+.el-menu--popup .el-menu-item { color: var(--color-text); }
+.el-menu--popup .el-menu-item:hover { background: var(--color-surface-hover); color: var(--color-primary); }
+
+/* ============================================================
+   深色模式（data-theme="dark"）
+   只换：大幅背景 / 中性容器 / 黑↔白文字；强调色与装饰色不动。
+   ============================================================ */
+html[data-theme='dark'] {
+  --color-bg:         #0d1117;
+  --color-canvas:     #0d1117;
+  --color-surface:    #161b22;
+  --color-surface-hover: #1c2128;
+  --color-inset:      #0a0f16;
+  --color-text:       #e6edf3;
+  --color-muted:      #9aa7b4;
+  --color-border:     #30363d;
+  --color-border-strong: #3a4550;
+  color-scheme: dark;
+}
+html[data-theme='dark'] body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* —— 大幅中性表面容器 —— */
+html[data-theme='dark'] .el-dialog,
+html[data-theme='dark'] .el-drawer,
+html[data-theme='dark'] .el-message,
+html[data-theme='dark'] .el-message-box,
+html[data-theme='dark'] .el-dropdown-menu,
+html[data-theme='dark'] .el-popover,
+html[data-theme='dark'] .el-card,
+html[data-theme='dark'] .el-upload-dragger,
+html[data-theme='dark'] .el-upload-list__item,
+html[data-theme='dark'] .el-pagination.is-background .el-pager li:not(.active),
+html[data-theme='dark'] .el-pagination.is-background .btn-prev,
+html[data-theme='dark'] .el-pagination.is-background .btn-next {
+  background-color: var(--color-surface);
+}
+html[data-theme='dark'] .el-dialog,
+html[data-theme='dark'] .el-drawer,
+html[data-theme='dark'] .el-message,
+html[data-theme='dark'] .el-message-box,
+html[data-theme='dark'] .el-popover,
+html[data-theme='dark'] .el-card {
+  color: var(--color-text);
+}
+html[data-theme='dark'] .el-dialog__title,
+html[data-theme='dark'] .el-drawer__header { color: var(--color-text); }
+
+/* —— 中性输入/默认控件 —— */
+html[data-theme='dark'] .el-input__inner,
+html[data-theme='dark'] .el-textarea__inner {
+  background-color: var(--color-inset);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme='dark'] .el-input__inner::placeholder,
+html[data-theme='dark'] .el-textarea__inner::placeholder { color: var(--color-muted); }
+html[data-theme='dark'] .el-input.is-active .el-input__inner,
+html[data-theme='dark'] .el-input__inner:focus,
+html[data-theme='dark'] .el-textarea__inner:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 1px var(--color-secondary) inset;
+}
+html[data-theme='dark'] .el-button--default {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme='dark'] .el-button--default:hover,
+html[data-theme='dark'] .el-button--default:focus {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+}
+html[data-theme='dark'] .el-button--default.is-disabled,
+html[data-theme='dark'] .el-button--default.is-disabled:hover {
+  color: var(--color-muted);
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+/* —— 文本 / 分隔 / 斑马 —— */
+html[data-theme='dark'] .el-divider { background-color: var(--color-border); }
+html[data-theme='dark'] .el-divider__text { background-color: var(--color-surface); }
+
+/* 自定义滚动条（可选优化） */
+html[data-theme='dark'] ::-webkit-scrollbar-thumb { background: #30363d; }
+html[data-theme='dark'] ::-webkit-scrollbar-track { background: transparent; }
+
+/* —— 深色补充：图片上的白渐变遮罩 / 评论分隔 / 原生 textarea —— */
+html[data-theme='dark'] .overlay {
+  background: linear-gradient(to top, rgba(1, 4, 9, .82), rgba(1, 4, 9, .16));
+}
+html[data-theme='dark'] .comment-item { border-color: var(--color-border); }
+html[data-theme='dark'] textarea {
+  background-color: var(--color-inset);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+/* ============================================================
+   下拉菜单弹层项（el-menu submenu popup）强覆盖
+   静止 = 正文色（浅/深自适应）；悬停 = 深底 + 主色文字，始终可读
+   ============================================================ */
+.el-menu--popup,
+.el-menu--horizontal.el-menu--popup {
+  background: var(--color-surface);
+}
+.el-menu--popup .el-menu-item,
+.el-menu--horizontal.el-menu--popup .el-menu-item {
+  color: var(--color-text) !important;
+  background-color: transparent !important;
+  border-bottom: none !important;
+}
+.el-menu--popup .el-menu-item:hover,
+.el-menu--horizontal.el-menu--popup .el-menu-item:hover {
+  color: var(--color-primary) !important;
+  background-color: var(--color-surface-hover) !important;
+}
+.el-menu--popup .el-menu-item.is-active,
+.el-menu--horizontal.el-menu--popup .el-menu-item.is-active {
+  color: var(--color-primary) !important;
+  background-color: transparent !important;
+}
+.el-menu--popup .el-submenu .el-submenu__title,
+.el-menu--horizontal.el-menu--popup .el-submenu .el-submenu__title {
+  color: var(--color-text) !important;
+  background-color: transparent !important;
+}
+.el-menu--popup .el-submenu .el-submenu__title:hover,
+.el-menu--horizontal.el-menu--popup .el-submenu .el-submenu__title:hover {
+  color: var(--color-primary) !important;
+  background-color: var(--color-surface-hover) !important;
+}
+
+/* ============================================================
+   站标：浅色/深色双图，按 data-theme 切换
+   ============================================================ */
+.brand-img.logo-dark { display: none !important; }
+html[data-theme='dark'] .brand-img.logo-light { display: none !important; }
+html[data-theme='dark'] .brand-img.logo-dark { display: inline-block !important; }
