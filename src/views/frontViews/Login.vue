@@ -150,7 +150,7 @@ export default {
 .bg{
   position:fixed;
   inset:0;
-  background:url("https://free.picui.cn/free/2025/10/12/68ea81ac3595f.jpg") center/cover;
+  background:url("https://i.ibb.co/wFZ6hmW2/login-Page-BG.jpg") center/cover;
   filter:brightness(.75);
 }
 

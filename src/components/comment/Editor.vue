@@ -39,7 +39,7 @@ export default {
       await addComment({
         parent_id: this.parentId,
         root_id: this.topicId,
-        post_userid: +localStorage.getItem('userid'),
+        post_userid: +localStorage.getItem('userId'),
         content: this.txt.trim(),
       })
       this.txt = ''

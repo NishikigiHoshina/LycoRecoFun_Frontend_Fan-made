@@ -83,6 +83,12 @@ export default {
         this.$router.push('/Index/index')
       }
     },
+    linktocontact(){
+      const { path } = this.$route
+      if (path !== '/Index/contact') {
+        this.$router.push('/Index/contact')
+      }
+    },
     linktoplaza(){
       const { path } = this.$route
       if (path !== '/Index/plaza') {
@@ -100,7 +106,31 @@ export default {
       if (path !== '/Index/write') {
         this.$router.push('/Index/write')
       }
-    }
+    },
+    linktoset(){
+      const { path } = this.$route
+      if (path !== '/Index/set') {
+        this.$router.push('/Index/set')
+      }
+    },
+    linktogallery(){
+      const { path } = this.$route
+      if (path !== '/Index/gallery') {
+        this.$router.push('/Index/gallery')
+      }
+    },
+    linktoseccreate(){
+      const { path } = this.$route
+      if (path !== '/Index/seccreate') {
+        this.$router.push('/Index/seccreate')
+      }
+    },
+    linktoupload(){
+      const { path } = this.$route
+      if (path !== '/Index/uploadwork') {
+        this.$router.push('/Index/uploadwork')
+      }
+    },
   },
   created() {
     window.addEventListener('devtoolschange', e => {
@@ -155,7 +185,7 @@ export default {
             <el-submenu index="1" :span="2">
               <template slot="title">首页</template>
               <el-menu-item index="1-1" @click="linktoindex">新闻</el-menu-item>
-              <el-menu-item :disabled="!connect_status" title="还在施工喵" index="1-2">联系站长</el-menu-item>
+              <el-menu-item :disabled="!connect_status" :title="connect_status ? '联系站长' : '功能未开放喵'" index="1-2" @click="linktocontact">联系站长</el-menu-item>
             </el-submenu>
 
             <el-submenu index="2" :span="2">
@@ -163,7 +193,7 @@ export default {
               <el-menu-item index="2-1" @click="linktoplaza">留言板</el-menu-item>
               <el-menu-item :disabled="!login_status" title="请登录后发帖喵" index="2-2" @click="gowritepost">我要发帖</el-menu-item>
               <el-menu-item index="2-3" @click="linktomessage">我要留言</el-menu-item>
-              <el-menu-item :disabled="!upload_status" title="不在开放时间内，请留意公告喵" index="2-3" @click="linktomessage">上传作品</el-menu-item>
+              <el-menu-item :disabled="!(upload_status && login_status)" title="不在开放时间内，请留意公告喵" index="2-4" @click="linktoupload">上传作品</el-menu-item>
 <!--              <el-submenu index="3-3" :span="2">-->
 <!--                <template slot="title">选项三</template>-->
 <!--                <el-menu-item index="3-3-1">子选项一</el-menu-item>-->
@@ -174,12 +204,12 @@ export default {
 
             <el-submenu :disabled="!database_status" index="3" :span="2" title="还在施工喵">
               <template slot="title">资料</template>
-              <el-menu-item index="3-1">设定</el-menu-item>
-              <el-menu-item index="3-2">图集</el-menu-item>
-              <el-menu-item index="3-3">二创</el-menu-item>
+              <el-menu-item index="3-1" @click="linktoset">设定</el-menu-item>
+              <el-menu-item index="3-2" @click="linktogallery">图集</el-menu-item>
+              <el-menu-item index="3-3" @click="linktoseccreate">二创</el-menu-item>
             </el-submenu>
 
-            <el-menu-item index="2" :span="2" :disabled="!login_status">
+            <el-menu-item index="2" :span="2" :disabled="!login_status" title="请登录后查看喵" @click="$router.push('/Index/personal')">
               个人中心
             </el-menu-item>
           </el-menu>

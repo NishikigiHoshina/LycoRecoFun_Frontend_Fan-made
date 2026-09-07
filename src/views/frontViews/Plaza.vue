@@ -9,32 +9,64 @@ export default {
       activeIndex: '1',
       postinfo:null,
       input:null,
-
+      // 分页相关
+      currentPage: 1,
+      pageSize: 10,
+      total: 0,
+      searchMode: false,   // 搜索时不走分页
+      loading: false,
     }
   },
   mounted() {
-    axios.post("http://localhost:12808/lycorisfunServer/api/postlist").then((res)=>{
-      console.log(res)
-      this.postinfo=res.data;
-    }).catch(function (err){
-      console.log(err)
-    })
-
+    this.fetchPage();
   },
   methods:{
+    // 分页查询：拉取当前页帖子
+    fetchPage(){
+      this.loading = true;
+      axios.post("http://localhost:12808/lycorisfunServer/api/postlistPage", null, {
+        params: { page: this.currentPage, size: this.pageSize }
+      }).then((res)=>{
+        const d = res.data || {};
+        this.postinfo = d.list || [];
+        this.total = d.total || 0;
+      }).catch((err)=>{
+        console.log("出错了喵"+err);
+        this.postinfo = [];
+        this.total = 0;
+      }).finally(()=>{
+        this.loading = false;
+      });
+    },
+    // 翻页
+    handlePageChange(page){
+      this.currentPage = page;
+      this.fetchPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    // 搜索：进入搜索模式，结果不参与分页
     searchPost(){
       if(this.input){
+        this.searchMode = true;
         axios({
           method:'post',
           url:'http://localhost:12808/lycorisfunServer/api/searchBytitle',
           params: { title: this.input }
         }).then((res)=>{
           this.postinfo = res.data || [];   // 直接拿数组
+          this.total = 0;
         }).catch(() => {
           this.postinfo = [];
         });
       }else
         this.$message.warning('搜索内容不能为空')
+    },
+    // 退出搜索，回到分页列表
+    clearSearch(){
+      this.searchMode = false;
+      this.input = '';
+      this.currentPage = 1;
+      this.fetchPage();
     },
     gowritepost(){
       const { path } = this.$route
@@ -85,8 +117,9 @@ export default {
               <el-card >
                 <div style="padding-bottom: 5px;">
                   <div style="display: flex; justify-content: center; align-items: center;">
-                    <el-input v-model="input" placeholder="搜索留言"></el-input>
+                    <el-input v-model="input" placeholder="搜索帖子" @keyup.enter.native="searchPost"></el-input>
                     <el-button @click="searchPost" type="primary" icon="el-icon-search">搜索</el-button>
+                    <el-button v-if="searchMode" @click="clearSearch" icon="el-icon-refresh-left">清除</el-button>
                   </div>
                 </div>
               </el-card>
@@ -95,7 +128,7 @@ export default {
         </el-row>
         <el-row>
           <el-col :span="24">
-            <div v-if="postinfo">
+            <div v-if="postinfo && postinfo.length">
               <div class="father">
                 <section v-for="(o,index) in postinfo" :key="o.postid" class="image card" :style="{ backgroundImage: `url(${o.imgurl})`}">
                   <div class="overlay"></div>
@@ -110,22 +143,24 @@ export default {
 
             </div>
             <div class="nothingHere" v-else>
-              <h2>找不到留言，请检查服务器状态喵</h2>
+              <h2>{{ searchMode ? '没搜到相关帖子喵' : '暂无帖子喵' }}</h2>
             </div>
           </el-col>
         </el-row>
         <div style="margin:20px">
           <hr>
         </div>
-        <el-row v-if="postinfo">
+        <el-row v-if="!searchMode && postinfo">
           <!--            分页控件-->
           <div class="dom_in_center">
             <div class="block">
-              <!--      <span class="demonstration">大于 7 页时的效果</span>-->
               <el-pagination
                   background
                   layout="prev, pager, next"
-                  :total="1000">
+                  :current-page="currentPage"
+                  :page-size="pageSize"
+                  :total="total"
+                  @current-change="handlePageChange">
               </el-pagination>
             </div>
           </div>

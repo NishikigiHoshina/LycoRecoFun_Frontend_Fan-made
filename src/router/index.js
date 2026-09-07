@@ -14,13 +14,17 @@ import LayoutVersion1 from "@/layouts/LayoutVersion1.vue";
 import IndexDemo from "@/views/frontViews/IndexDemo.vue";
 import Plaza from "@/views/frontViews/Plaza.vue";
 import Set from "@/views/frontViews/Set.vue";
+import Contact from "@/views/frontViews/Contact.vue";
 import Gallery from "@/views/frontViews/Gallery.vue";
 import Message from "@/views/frontViews/TakeMessage.vue"
 import Login from "@/views/frontViews/Login.vue";
 import WritePost from "@/views/frontViews/WritePost.vue";
+import UploadWork from "@/views/frontViews/UploadWork.vue";
 
 //课堂测试页
 import Demo from "@/views/frontViews/demo.vue";
+
+
 
 
 
@@ -62,6 +66,12 @@ const routes = [
       {path: 'plaza',name: 'plaza',component:Plaza },
       {path: 'gallery',name: 'gallery',component:Gallery },
       {path: 'set',name: 'set',component:Set},
+      {path: 'contact',name: 'contact',component:Contact},
+      {path:'personal',name:'personal',component: () => import('@/views/frontViews/Personal.vue'),
+        beforeEnter: (to, from, next) => {
+          let token = localStorage.getItem('token');
+          if (!token) { next('/Login'); } else { next(); }
+        }},
       {path: 'message',name: 'message',component:Message },
       {path: 'write',name: 'write',component:WritePost,
         beforeEnter: (to, from, next) => {
@@ -71,7 +81,10 @@ const routes = [
           } else {
             next();                        // 已登录正常进入
           }
-        }}
+        }},
+      {
+        path: 'uploadwork',name: 'uploadwork',component:UploadWork,
+      }
     ],
   },
   {
