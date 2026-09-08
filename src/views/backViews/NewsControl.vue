@@ -24,9 +24,6 @@ export default{
         await axios({
           method:'post',
           url: 'http://localhost:12808/lycorisfunServer/api/updatePostinfo',
-          headers:{
-            'token': localStorage.getItem('token')
-          },
           payload
         })
 
@@ -59,6 +56,7 @@ export default{
     },
     deleteuser(){
       axios.post('http://localhost:12808/lycorisfunServer/api/deletePost?postid='+this.currentRow)
+          .catch(err => console.warn('[NewsControl] 删除新闻请求失败:', err))
     }
   },
   created() {

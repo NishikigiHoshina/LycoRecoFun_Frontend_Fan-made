@@ -63,6 +63,7 @@
 
 <script>
 import { getReply, addComment } from '@/api/comment'
+import { getUserId } from '@/utils/auth'
 import LikeBtn from './LikeBtn.vue'
 import ReplyList from './ReplyList.vue'
 
@@ -101,7 +102,7 @@ export default {
       await addComment({
         parent_id: this.postId,      // 后端实体字段 parent_id
         root_id: this.postId,        // root_id
-        post_userid: +localStorage.getItem('userId'), // 非空
+        post_userid: +getUserId(), // 非空
         content: this.editor.content.trim(),
         // 其余允许为空的字段不传
       })

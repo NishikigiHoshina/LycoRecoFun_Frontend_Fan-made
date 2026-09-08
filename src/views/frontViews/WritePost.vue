@@ -3,6 +3,7 @@
 <script>
 import WangEditor from '@/components/WangEditor.vue'
 import axios from "axios";
+import { getUserId } from "@/utils/auth";
 
 export default {
   name: 'writepost',
@@ -19,7 +20,7 @@ export default {
   },
   methods:{
     async handlePost() {
-      this.form.post_userid = window.localStorage.getItem('userId')
+      this.form.post_userid = getUserId()
       this.form.created_at = new Date().toLocaleString('zh-CN') // 用真实时间
       if (!this.form.post_userid) {
         this.$message.warning('用户信息为空')
@@ -29,9 +30,6 @@ export default {
         const { data } = await axios({
           method:'post',
           url:'http://localhost:12808/lycorisfunServer/api/writepost',
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token')   // 标准字段
-          },
           data:this.form})
         this.$message.success(data.msg)
         setTimeout(() => this.$router.go(0), 2000)

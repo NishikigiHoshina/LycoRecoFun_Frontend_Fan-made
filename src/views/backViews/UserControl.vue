@@ -52,6 +52,7 @@ export default{
     },
     deleteuser(){
       axios.post('http://localhost:12808/lycorisfunServer/api/deletePost?postid='+this.currentRow)
+          .catch(err => console.warn('[UserControl] 删除用户请求失败:', err))
     }
   },
   created() {

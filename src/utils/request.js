@@ -1,19 +1,17 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
+import { clearAuth, isLoggedIn } from './auth'
 
-// 创建实例
+// 创建实例（方案 B：登录态在 HttpOnly cookie，跨源需 withCredentials）
 const service = axios.create({
     baseURL: process.env.VUE_APP_BASE_API || 'http://localhost:12808/lycorisfunServer/api',
-    timeout: 8000
+    timeout: 8000,
+    withCredentials: true
 })
 
-// 请求拦截（可选：带 token）
+// 请求拦截：token 由浏览器随 cookie 自动携带，无需手动拼 Header
 service.interceptors.request.use(
-    config => {
-        const token = window.localStorage.getItem('token')
-        if (token) config.headers['Authorization'] ='Bearer ' + token
-        return config
-    },
+    config => config,
     error => Promise.reject(error)
 )
 
@@ -30,7 +28,16 @@ service.interceptors.response.use(
         return Promise.reject(new Error(res.msg || 'Error'))
     },
     error => {
-        Message.error(error.message || 'Network Error')
+        const status = error.response && error.response.status
+        if (status === 401 && isLoggedIn()) {
+            // 凭证失效 → 清前端画像并回登录页
+            clearAuth()
+            if (window.location.hash !== '#/Login') {
+                window.location.hash = '#/Login'
+            }
+        }
+        const msg = (error.response && error.response.data && error.response.data.msg) || error.message || 'Network Error'
+        Message.error(msg)
         return Promise.reject(error)
     }
 )

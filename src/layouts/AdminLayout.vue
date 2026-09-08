@@ -63,16 +63,16 @@
 </template>
 
 <script>
+import { getStatus, isLoggedIn } from '@/utils/auth';
+
 export default {
   name: 'AdminLayout',
   data() {
     return { collapsed: false };
   },
   beforeRouteEnter(to, from, next) {
-    let token = localStorage.getItem('token');
-    let status = localStorage.getItem('status');
-    if (!token) next('/Login');
-    else if (status !== '3') next('/Index/index');
+    if (!isLoggedIn()) next('/Login');
+    else if (getStatus() !== '3') next('/Index/index');
     else next();
   },
 };

@@ -22,6 +22,7 @@
 
 <script>
 import { addComment } from '@/api/comment'
+import { getUserId } from '@/utils/auth'
 export default {
   props: {
     topicId: [String, Number],
@@ -39,7 +40,7 @@ export default {
       await addComment({
         parent_id: this.parentId,
         root_id: this.topicId,
-        post_userid: +localStorage.getItem('userId'),
+        post_userid: +getUserId(),
         content: this.txt.trim(),
       })
       this.txt = ''

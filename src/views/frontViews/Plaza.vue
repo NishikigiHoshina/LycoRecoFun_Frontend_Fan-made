@@ -1,5 +1,6 @@
 <script>
 import axios from "axios";
+import { isLoggedIn } from "@/utils/auth";
 export default {
   name:'Plaza',
   data(){
@@ -87,11 +88,7 @@ export default {
   },
   computed:{
     islogin(){
-      let token = localStorage.getItem('token')
-      if (token){
-        return true
-      }else
-        return false
+      return isLoggedIn()
     }
   }
 

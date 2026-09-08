@@ -3,6 +3,7 @@
 </script>
 <script>
 import axios from "axios";
+import { isLoggedIn, setAuthProfile } from "@/utils/auth";
 
 export default {
   name:"login",
@@ -27,11 +28,7 @@ export default {
           message: '登录成功',
           type: 'success'
         });
-        window.localStorage.setItem('token', res.data.token);
-        window.localStorage.setItem('userId', res.data.userId);
-        window.localStorage.setItem('username', res.data.username);
-        window.localStorage.setItem('avatar', res.data.avater);
-        window.localStorage.setItem('status', res.data.status);
+        setAuthProfile(res.data);   // 仅保存非机密画像；token 已在后端 HttpOnly cookie 中
 
 
         this.$router.push('/Index/index');
@@ -94,8 +91,7 @@ export default {
 
   },
   beforeRouteEnter(to, from, next){
-    let token =localStorage.getItem('token');
-    if(token)next('/Index/index');
+    if (isLoggedIn()) next('/Index/index');
     else next()
   }
 

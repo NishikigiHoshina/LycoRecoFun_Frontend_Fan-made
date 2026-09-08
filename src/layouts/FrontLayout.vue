@@ -1,5 +1,6 @@
 <script>
 import axios from "axios";
+import { clearAuth, getAvatar, getStatus, getUserName, isLoggedIn } from "@/utils/auth";
 
 export default {
   data() {
@@ -10,39 +11,27 @@ export default {
       connect_status:true,
       upload_status:true,
       database_status:true,
-      userstatus:window.localStorage.getItem("status"),
-      username:window.localStorage.getItem("username"),
-      avater:window.localStorage.getItem("avatar"),
+      userstatus:getStatus(),
+      username:getUserName(),
+      avater:getAvatar(),
     };
   },
   computed:{
     login_status(){
-      const a=window.localStorage.getItem('token')
-      if (a){
-        return true
-      }else
-        return false
+      return isLoggedIn()
     },
     user_status(){
-      const a=window.localStorage.getItem('status')
-      if (a===null&& a===''){
-        return false
-      }
-      else if (a==='1' || a==='2'){
-        return false
-      }else if(a==='3'){
-        return true
-      }
+      return getStatus() === '3'
     },
     roleInfo(){
-      const s=window.localStorage.getItem('status')
+      const s = getStatus()
       if(s==='3') return { text:'管理员', admin:true }
       if(s==='1') return { text:'普通用户', admin:false }
       if(s==='2') return { text:'已停用', admin:false }
       return { text:'访客', admin:false }
     },
     avatarInitial(){
-      const t=(window.localStorage.getItem('username')||'').trim()
+      const t = getUserName().trim()
       return t ? t.charAt(0).toUpperCase() : '?'
     }
   },
@@ -59,11 +48,9 @@ export default {
     },
 
     logout(){
-      window.localStorage.removeItem('username');
-      window.localStorage.removeItem('userId');
-      window.localStorage.removeItem('token');
-      window.localStorage.removeItem('avatar');
-      window.localStorage.removeItem('status');
+      // 通知后端清 HttpOnly token Cookie（best-effort），再清前端画像
+      axios.post("http://localhost:12808/lycorisfunServer/api/logout").catch(() => {});
+      clearAuth();
       this.$message('已退出账号');
       const { path } = this.$route
       if (path !== '/Index/index') {

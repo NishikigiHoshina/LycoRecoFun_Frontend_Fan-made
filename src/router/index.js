@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import { isLoggedIn } from '@/utils/auth';
 
 /* 后台布局 + 后台页面（/homeDemo，仅 status=3 管理员可进） */
 import AdminLayout from '@/layouts/AdminLayout.vue';
@@ -63,16 +64,14 @@ const routes = [
         path: 'personal', name: 'personal',
         component: () => import('@/views/frontViews/Personal.vue'),
         beforeEnter: (to, from, next) => {
-          let token = localStorage.getItem('token');
-          if (!token) { next('/Login'); } else { next(); }
+          if (!isLoggedIn()) { next('/Login'); } else { next(); }
         },
       },
       { path: 'message', name: 'message', component: TakeMessage },
       {
         path: 'write', name: 'write', component: WritePost,
         beforeEnter: (to, from, next) => {
-          let token = localStorage.getItem('token');
-          if (!token) { next('/Login'); } else { next(); }
+          if (!isLoggedIn()) { next('/Login'); } else { next(); }
         },
       },
       { path: 'uploadwork', name: 'uploadwork', component: UploadWork },

@@ -31,9 +31,6 @@ export default {
       axios({
         method: "post",
         url: "http://localhost:12808/lycorisfunServer/api/deleteIndexIMG",
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token')   // 标准字段
-        },
         params:{id},
       }).then(res => {
         console.log(res)
@@ -91,11 +88,8 @@ export default {
       axios({
         method: 'post',
         url:"http://localhost:12808/lycorisfunServer/api/updateStatus",
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token')   // 标准字段
-        },
         params:{funcname:'connectWebSiteOwner',status:newstatus}
-      })
+      }).catch(err => console.warn('[SiteControl] 更新 connectWebSiteOwner 失败:', err))
     },
     updateStatus_uploadwork(){
       var newstatus;
@@ -106,11 +100,8 @@ export default {
       axios({
         method: 'post',
         url:"http://localhost:12808/lycorisfunServer/api/updateStatus",
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token')   // 标准字段
-        },
         params:{funcname:'uploadWork',status: newstatus}
-      })
+      }).catch(err => console.warn('[SiteControl] 更新 uploadWork 失败:', err))
     },
     updateStatus_database(){
       var newstatus;
@@ -121,11 +112,8 @@ export default {
       axios({
         method: 'post',
         url:"http://localhost:12808/lycorisfunServer/api/updateStatus",
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token')   // 标准字段
-        },
         params:{funcname:'databaseFunction',status:newstatus}
-      })
+      }).catch(err => console.warn('[SiteControl] 更新 databaseFunction 失败:', err))
     },
 
 
@@ -218,6 +206,7 @@ export default {
             :before-close="handleClose">
           <el-upload
               ref="upload"
+              :with-credentials="true"
           action="http://localhost:12808/lycorisfunServer/api/addIndexIMG"
           :auto-upload="false"
           :limit="1"

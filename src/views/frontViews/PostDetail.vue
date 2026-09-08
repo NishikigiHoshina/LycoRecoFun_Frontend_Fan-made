@@ -1,5 +1,6 @@
 <script >
 import axios from "axios";
+import { getUserId } from '@/utils/auth';
 import PostComment from '@/components/comment/PostComment.vue'
 export default {
   name:'posts',
@@ -10,7 +11,7 @@ export default {
       post: null,
       contentlist:[],
       usercontent:{
-        id:window.localStorage.getItem('userid'),
+        id:getUserId(),
         content:'',
         root_id:this.$route.params.id,
       },
