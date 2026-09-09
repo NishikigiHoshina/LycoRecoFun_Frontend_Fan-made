@@ -1,159 +1,206 @@
 <script>
 import axios from "axios";
+import { warnIfUnsupported } from '@/utils/validate'
 
-export default{
-  name:"NewsControl",
-  data(){
-    return{
-      newslist:null,
+export default {
+  name: "NewsControl",
+  data() {
+    return {
+      newslist: null,
+      loading: false,
+      createVisible: false,
       editdialogVisible: false,
       detaildialogVisible: false,
-      currentnews:[],
-      currentRow: null,
-      changenews:[],
-
+      createForm: { title: '', imgurl: '', news_link: '', time: '' },
+      editingNews: { news_id: 0, title: '', imgurl: '', news_link: '', time: '', status: 1 },
+      viewingNews: {}
     }
   },
-  methods:{
-    async submit() {
+  methods: {
+    loadNews() {
+      this.loading = true
+      axios.post("http://localhost:12808/lycorisfunServer/api/newslistAll").then((res) => {
+        this.newslist = res.data || []
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('新闻列表加载失败：' + (err.response?.data?.msg || err.message))
+      }).finally(() => { this.loading = false })
+    },
+    statusText(s) { return s === 0 ? '已删除' : '正常' },
+    statusType(s) { return s === 0 ? 'info' : 'success' },
+
+    openCreate() {
+      this.createForm = { title: '', imgurl: '', news_link: '', time: '' }
+      this.createVisible = true
+    },
+    async saveNews() {
+      if (!this.createForm.title.trim()) { this.$message.warning('标题不能为空'); return }
+      if (warnIfUnsupported(this, [
+        { name: '标题', value: this.createForm.title },
+        { name: '图片链接', value: this.createForm.imgurl },
+        { name: '新闻链接', value: this.createForm.news_link }
+      ])) return
       try {
-        // 1. 深拷贝一份，避免提交过程中意外修改原数据
-        const payload = JSON.parse(JSON.stringify(this.currentnews))
-
-        // 2. 发 POST，Content-Type: application/json 自动设置
-        await axios({
-          method:'post',
-          url: 'http://localhost:12808/lycorisfunServer/api/updatePostinfo',
-          payload
+        const res = await axios({
+          method: 'post',
+          url: 'http://localhost:12808/lycorisfunServer/api/addnews',
+          data: { ...this.createForm }
         })
-
-        // 3. 成功回写 + 提示
-        const idx = this.currentRow - 1
-        this.$set(this.newslist, idx, payload)   // Vue2 响应式
-        this.$message.success('已保存')
+        this.$message.success(res.data.msg || '发布成功')
+        this.createVisible = false
+        this.loadNews()
       } catch (err) {
-        this.$message.error(err.message || '保存失败')
+        this.$message.error('发布失败：' + (err.response?.data?.msg || err.message))
       }
     },
-    setCurrent(row) {
-      this.$refs.singleTable.setCurrentRow(row);
+
+    openEdit(row) {
+      this.editingNews = JSON.parse(JSON.stringify(row))
+      if (this.editingNews.status == null) this.editingNews.status = 1
+      this.editdialogVisible = true
     },
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-          .then(_ => {
-            done();
-          })
-          .catch(_ => {});
+    async submitEdit() {
+      if (!this.editingNews.title || !String(this.editingNews.title).trim()) {
+        this.$message.warning('标题不能为空'); return
+      }
+      if (warnIfUnsupported(this, [
+        { name: '标题', value: this.editingNews.title },
+        { name: '图片链接', value: this.editingNews.imgurl },
+        { name: '新闻链接', value: this.editingNews.news_link }
+      ])) return
+      try {
+        const payload = {
+          news_id: this.editingNews.news_id,
+          title: this.editingNews.title,
+          imgurl: this.editingNews.imgurl,
+          news_link: this.editingNews.news_link,
+          time: this.editingNews.time,
+          status: Number(this.editingNews.status)
+        }
+        const res = await axios({
+          method: 'post',
+          url: 'http://localhost:12808/lycorisfunServer/api/updatenews',
+          data: payload
+        })
+        this.$message.success(res.data.msg || '保存成功')
+        this.editdialogVisible = false
+        this.loadNews()
+      } catch (err) {
+        this.$message.error('保存失败：' + (err.response?.data?.msg || err.message))
+      }
     },
-    handleCurrentChange(val) {
-      this.currentRow = val;
+
+    openDetail(row) {
+      this.viewingNews = row
+      this.detaildialogVisible = true
     },
-    loadinfo(){
-      this.currentnews = JSON.parse(JSON.stringify(this.newslist[this.currentRow-1]))
-      //深拷贝-将json数据复制一遍，再赋给新变量
-      this.changenews = JSON.parse(JSON.stringify(this.newslist[this.currentRow-1]))
-      // this.changepost=this.postlist[this.currentRow-1];浅拷贝-不同变量指向相同地址
-    },
-    deleteuser(){
-      axios.post('http://localhost:12808/lycorisfunServer/api/deletePost?postid='+this.currentRow)
-          .catch(err => console.warn('[NewsControl] 删除新闻请求失败:', err))
+
+    askDelete(row) {
+      this.$confirm(
+        `确认删除《${row.title || ('#' + row.news_id)}》？删除后前台将不再展示（软删除，status=0）。`,
+        '删除确认',
+        { type: 'warning', confirmButtonText: '删除', cancelButtonText: '取消' }
+      ).then(async () => {
+        try {
+          const res = await axios.post('http://localhost:12808/lycorisfunServer/api/deletenews?news_id=' + row.news_id)
+          this.$message.success(res.data.msg || '删除成功')
+          this.loadNews()
+        } catch (err) {
+          this.$message.error('删除失败：' + (err.response?.data?.msg || err.message))
+        }
+      }).catch(() => { })
     }
   },
   created() {
-    axios.post("http://localhost:12808/lycorisfunServer/api/newslistAll").then((res)=>{
-      console.log(res.data)
-      this.newslist=res.data;
-    }).catch(function (err){
-      console.log(err)
-    });
+    this.loadNews()
   }
-
 }
 </script>
 
 <template>
   <div>
-    <h2>
-      新闻管理
-    </h2>
+    <h2>新闻管理</h2>
     <hr>
-    <div style="text-align: center;">
-      <table v-if="newslist">
+    <div class="toolbar">
+      <el-button type="primary" size="small" icon="el-icon-plus" :loading="loading" @click="openCreate">新建新闻</el-button>
+    </div>
+
+    <div class="table-wrap" v-if="newslist && newslist.length">
+      <table>
         <thead>
-        <tr>
-          <th>id</th>
-          <th>标题</th>
-          <th>发布时间</th>
-          <th>状态</th>
-          <th>操作</th>
-        </tr>
+          <tr>
+            <th style="width: 70px">id</th>
+            <th>标题</th>
+            <th style="width: 170px">发布时间</th>
+            <th style="width: 100px">状态</th>
+            <th style="width: 170px">操作</th>
+          </tr>
         </thead>
-        <tr v-for="news in newslist" :key="news.news_id">
-          <td>{{news.news_id}}</td>
-          <td>{{news.title}}</td>
-          <td>{{news.time}}</td>
-          <td>{{news.status}}</td>
-          <td><el-button type="text" @click="function(){currentRow=news.news_id;loadinfo();detaildialogVisible=true}">查看</el-button><br>
-            <el-button type="text" @click="function(){currentRow=news.news_id;loadinfo();editdialogVisible=true;}">编辑</el-button><br>
-            <el-button type="text" @click="function(){$confirm('确认删除？').then(deleteuser).catch(_ => {}); currentRow=news.news_id;loadinfo();}">删除</el-button></td>
-        </tr>
+        <tbody>
+          <tr v-for="news in newslist" :key="news.news_id">
+            <td>{{ news.news_id }}</td>
+            <td class="cell-title">{{ news.title }}</td>
+            <td>{{ news.time }}</td>
+            <td>
+              <el-tag :type="statusType(news.status)" size="mini">{{ statusText(news.status) }}</el-tag>
+            </td>
+            <td>
+              <el-button type="text" size="small" @click="openDetail(news)">查看</el-button>
+              <el-button type="text" size="small" @click="openEdit(news)">编辑</el-button>
+              <el-button type="text" size="small" class="danger" @click="askDelete(news)">删除</el-button>
+            </td>
+          </tr>
+        </tbody>
       </table>
-      <div v-else>
-        <h2 style="color: red">查询不到数据喵，请检查服务器状态喵！</h2>
-      </div>
     </div>
-    <div>
-      <!--      编辑框-->
-      <el-dialog
-          title="编辑"
-          :visible.sync="editdialogVisible"
-          width="30%"
-          :before-close="handleClose">
-        <p><span>id</span><el-input v-model="changenews.news_id" placeholder="请输入内容"></el-input></p>
-        <p><span>标题</span><el-input v-model="changenews.title" placeholder="请输入内容"></el-input></p>
-        <p><span>图片链接</span><el-input v-model="changenews.imgurl" placeholder="请输入内容"></el-input></p>
-        <p><span>内容</span><el-input
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容"
-            v-model="changenews.content">
-        </el-input></p>
-        <p><span>新闻链接</span><el-input v-model="changenews.news_link" placeholder="请输入内容"></el-input></p>
-        <p><span>发布时间</span><el-input v-model="changenews.time" placeholder="请输入内容"></el-input></p>
-        <p><span>状态</span><el-input v-model="changenews.status" placeholder="请输入内容"></el-input></p>
-        <span slot="footer" class="dialog-footer">
-    <el-button @click="function(){editdialogVisible = false;}">取 消</el-button>
-    <el-button type="primary" @click="function(){$confirm('确认修改？').then(_ => {
-            submit();
-          })
-          .catch(_ => {}); editdialogVisible = false;}">提 交</el-button>
-  </span>
-      </el-dialog>
-      <!--查看框-->
-      <el-dialog
-          title="查看"
-          :visible.sync="detaildialogVisible"
-          width="35%"
-          :before-close="handleClose">
-        <h2>id:</h2>
-        <h3>{{ currentnews.news_id }}</h3>
-        <h2>标题:</h2>
-        <h3>{{ currentnews.title }}</h3>
-        <h2>图片链接:</h2>
-        <h3>{{ currentnews.imgurl }}</h3>
-        <h2>内容:</h2>
-        <h3>{{ currentnews.content }}</h3>
-        <h2>新闻链接:</h2>
-        <h3>{{ currentnews.news_link }}</h3>
-        <h2>发布时间:</h2>
-        <h3>{{ currentnews.time }}</h3>
-        <h2>状态:</h2>
-        <h3>{{ currentnews.status }}</h3>
-        <span slot="footer" class="dialog-footer">
-    <el-button type="primary" @click="detaildialogVisible = false">关 闭</el-button>
-  </span>
-      </el-dialog>
+    <div v-else-if="!loading" class="empty">
+      <h2>查询不到数据喵，请检查服务器状态喵！</h2>
     </div>
+
+    <!-- 新建新闻 -->
+    <el-dialog title="新建新闻" :visible.sync="createVisible" width="40%">
+      <p><span>标题 *</span><el-input v-model="createForm.title" placeholder="请输入标题"></el-input></p>
+      <p><span>图片链接</span><el-input v-model="createForm.imgurl" placeholder="https://…/xxx.png"></el-input></p>
+      <p><span>新闻链接</span><el-input v-model="createForm.news_link" placeholder="https://…"></el-input></p>
+      <p><span>发布时间</span><el-input v-model="createForm.time" placeholder="留空使用当前时间，格式 2026-09-10 10:00"></el-input></p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="createVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveNews">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 编辑新闻 -->
+    <el-dialog title="编辑新闻" :visible.sync="editdialogVisible" width="40%">
+      <p><span>ID</span><el-input :value="editingNews.news_id" disabled></el-input></p>
+      <p><span>标题 *</span><el-input v-model="editingNews.title" placeholder="请输入标题"></el-input></p>
+      <p><span>图片链接</span><el-input v-model="editingNews.imgurl" placeholder="https://…/xxx.png"></el-input></p>
+      <p><span>新闻链接</span><el-input v-model="editingNews.news_link" placeholder="https://…"></el-input></p>
+      <p><span>发布时间</span><el-input v-model="editingNews.time" placeholder="格式 2026-09-10 10:00"></el-input></p>
+      <p>
+        <span>状态</span>
+        <el-select v-model="editingNews.status" style="width:100%">
+          <el-option :value="1" label="正常（前台展示）"></el-option>
+          <el-option :value="0" label="已删除（前台隐藏，可改回 1 恢复）"></el-option>
+        </el-select>
+      </p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editdialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitEdit">保 存</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 查看新闻 -->
+    <el-dialog title="查看" :visible.sync="detaildialogVisible" width="40%">
+      <p><span>ID</span><span class="val">{{ viewingNews.news_id }}</span></p>
+      <p><span>标题</span><span class="val">{{ viewingNews.title }}</span></p>
+      <p><span>图片链接</span><span class="val">{{ viewingNews.imgurl }}</span></p>
+      <p><span>新闻链接</span><span class="val">{{ viewingNews.news_link }}</span></p>
+      <p><span>发布时间</span><span class="val">{{ viewingNews.time }}</span></p>
+      <p><span>状态</span><span class="val">{{ statusText(viewingNews.status) }}</span></p>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="detaildialogVisible = false">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -166,32 +213,60 @@ h2 {
   padding-left: 14px;
   border-left: 4px solid var(--color-primary);
 }
-hr { margin: 10px 0 18px; }
+hr { margin: 10px 0 14px; }
 
-table {
-  border-collapse: collapse;
+/* 工具栏 */
+.toolbar {
+  padding: 0 16px 12px;
+  text-align: left;
+}
+
+/* ===== 主题化表格卡片 ===== */
+.table-wrap {
   width: 97%;
   margin: 0 auto 26px;
   background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 8px 28px rgba(0, 0, 0, .06);
 }
-th, td { padding: 12px 16px; text-align: left; }
-th {
-  background: var(--color-surface)5f5;
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th, td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+}
+thead th {
+  background: var(--color-canvas);
   color: var(--color-primary);
   font-family: var(--font-serif);
   font-weight: 600;
   border-bottom: 2px solid var(--color-primary);
   white-space: nowrap;
 }
-td {
-  border-bottom: 1px solid var(--color-border);
+tbody td {
   color: var(--color-text);
-  font-size: 14px;
+  border-bottom: 1px solid var(--color-border);
   word-break: break-word;
+  vertical-align: middle;
 }
 tbody tr:hover { background: var(--color-surface-hover); }
 tbody tr:last-child td { border-bottom: none; }
+
+.cell-title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+.el-button.danger { color: var(--color-primary); }
+.el-button.danger:hover { color: var(--color-secondary); }
+
+.empty {
+  text-align: center;
+  color: var(--color-muted);
+  padding: 40px 0;
+}
 </style>

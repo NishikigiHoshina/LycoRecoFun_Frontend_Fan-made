@@ -1,7 +1,3 @@
-<script setup>
-
-</script>
-
 <template>
   <div class="reply-list">
     <div v-if="replies.length" class="reply-list-inner">

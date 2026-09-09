@@ -1,7 +1,3 @@
-<script setup>
-
-</script>
-
 <template>
   <div class="post-comment">
     <!-- 发评论 -->
@@ -64,6 +60,7 @@
 <script>
 import { getReply, addComment } from '@/api/comment'
 import { getUserId } from '@/utils/auth'
+import { warnIfUnsupported } from '@/utils/validate'
 import LikeBtn from './LikeBtn.vue'
 import ReplyList from './ReplyList.vue'
 
@@ -98,6 +95,7 @@ export default {
     },
     async submitComment() {
       if (!this.editor.content.trim()) return
+      if (warnIfUnsupported(this, [{ name: '评论内容', value: this.editor.content }])) return
       this.editor.loading = true
       await addComment({
         parent_id: this.postId,      // 后端实体字段 parent_id

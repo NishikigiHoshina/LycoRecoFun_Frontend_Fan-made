@@ -1,6 +1,3 @@
-<script setup>
-
-</script>
 <script>
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 export default {

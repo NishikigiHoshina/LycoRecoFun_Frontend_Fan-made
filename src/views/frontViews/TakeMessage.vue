@@ -1,5 +1,6 @@
 <script >
 import axios from "axios";
+import { warnIfUnsupported } from '@/utils/validate'
 
 export default {
   name: "TakeMessage",
@@ -16,6 +17,11 @@ export default {
   },
   methods: {
     async onSubmit() {
+      if (warnIfUnsupported(this, [
+        { name: '昵称', value: this.form.post_username },
+        { name: '个人主页', value: this.form.link },
+        { name: '留言内容', value: this.form.content }
+      ])) return
       try {
         // 1. 整包提交（字段名 == 构造器参数名）
         const res = await axios.post(

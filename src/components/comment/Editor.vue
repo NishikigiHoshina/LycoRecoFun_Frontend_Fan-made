@@ -1,7 +1,3 @@
-<script setup>
-
-</script>
-
 <template>
   <div :class="['editor-box', { slim }]">
     <el-input
@@ -23,6 +19,7 @@
 <script>
 import { addComment } from '@/api/comment'
 import { getUserId } from '@/utils/auth'
+import { warnIfUnsupported } from '@/utils/validate'
 export default {
   props: {
     topicId: [String, Number],
@@ -36,6 +33,7 @@ export default {
   methods: {
     async submit() {
       if (!this.txt.trim()) return
+      if (warnIfUnsupported(this, [{ name: '回复内容', value: this.txt }])) return
       this.loading = true
       await addComment({
         parent_id: this.parentId,

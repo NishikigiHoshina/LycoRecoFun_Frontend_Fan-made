@@ -1,6 +1,3 @@
-<script setup>
-import axios from "axios";
-</script>
 <script>
 export default {
   name:'upload',

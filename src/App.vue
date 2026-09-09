@@ -22,15 +22,22 @@
   padding: 0;
 }
 </style>
-<script setup lang="ts">
-import { ref } from 'vue';
+<script>
 import './Dev-tools-detect-index.js';   // 只触发一次，挂 window.devtools
 import { getMode, toggleMode } from './utils/theme';
 
-// 主题初始化放在 main.js（应用最早期）；此处再同步一次状态
-const isDark = ref(getMode() === 'dark');
-
-function switchTheme() {
-  isDark.value = toggleMode() === 'dark';
-}
+export default {
+  name: 'App',
+  data() {
+    return {
+      // 主题初始化放在 main.js（应用最早期）；此处再同步一次状态
+      isDark: getMode() === 'dark'
+    };
+  },
+  methods: {
+    switchTheme() {
+      this.isDark = toggleMode() === 'dark';
+    }
+  }
+};
 </script>

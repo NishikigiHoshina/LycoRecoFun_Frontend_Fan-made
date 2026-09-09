@@ -1,9 +1,7 @@
-<script setup>
-
-</script>
 <script>
 import axios from "axios";
 import { isLoggedIn, setAuthProfile } from "@/utils/auth";
+import { warnIfUnsupported } from "@/utils/validate";
 
 export default {
   name:"login",
@@ -40,6 +38,7 @@ export default {
     },
     handleReg(){
       if(this.reg.password!==this.reg.pwd2){ this.$message.warning('两次密码不一致'); return; }
+      if (warnIfUnsupported(this, [{ name: '用户名', value: this.reg.username }])) return;
       this.commitreg.email=JSON.parse(JSON.stringify(this.reg.email))
       this.commitreg.userName=JSON.parse(JSON.stringify(this.reg.username))
       this.commitreg.password=JSON.parse(JSON.stringify(this.reg.pwd2))

@@ -1,5 +1,3 @@
-<script setup>
-</script>
 <script>
 import WangEditor from '@/components/WangEditor.vue'
 import axios from "axios";
