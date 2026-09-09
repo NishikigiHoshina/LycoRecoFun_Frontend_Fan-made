@@ -1,6 +1,10 @@
 <script>
 import axios from "axios";
 
+// 与后端 lycorisfun.upload.types.index-img.* 保持一致（后端调整配置时请同步此处）
+const MAX_IMG_SIZE = 5 * 1024 * 1024   // 5MB
+const IMG_MIME = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+
 export default {
   name:"SiteControl",
   data(){
@@ -18,7 +22,12 @@ export default {
   methods:{
     axios,
     changevisible(){
+      // 打开弹窗：清空上次预览与文件列表，避免残留旧文件再次提交产生重复图片
+      this.imageUrl = ''
       this.dialogVisible = true
+      this.$nextTick(() => {
+        if (this.$refs.upload) this.$refs.upload.clearFiles()
+      })
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -33,26 +42,25 @@ export default {
         url: "http://localhost:12808/lycorisfunServer/api/deleteIndexIMG",
         params:{id},
       }).then(res => {
-        console.log(res)
-        this.$message.success(res.data.msg)
-        setTimeout(2000)
-        this.$router.go(0)
+        this.$message.success(res.data.msg || '删除成功')
+        this.loadImgs()
       }).catch(err=>{
-        console.log(err)
+        this.$message.error('删除失败：' + (err.response?.data?.msg || err.message))
       })
-    }
-    ,
+    },
     handleChange(file, fileList) {
       if (file.status === 'ready') {   // 刚选完
-        const isImg = ['image/jpeg','image/png','image/gif'].includes(file.raw.type)
-        const isLt2M = file.raw.size / 1024 / 1024 < 2
-        if (!isImg || !isLt2M) {
-          this.$message.error('格式或大小不符')
+        const isImg = IMG_MIME.includes(file.raw.type)
+        if (!isImg) {
+          this.$message.error('仅支持 jpg/jpeg/png/gif/webp 图片')
           fileList.pop()          // 移除不合格文件
-          this.fileSelected = false
           return
         }
-        this.fileSelected = true
+        if (file.raw.size > MAX_IMG_SIZE) {
+          this.$message.error('图片大小不能超过 5MB')
+          fileList.pop()
+          return
+        }
         this.imageUrl = URL.createObjectURL(file.raw) // 本地预览
       }
     },
@@ -67,16 +75,30 @@ export default {
       if (res.code === 200) {
         this.$message.success('上传成功')
         this.imageUrl = res.dataobject   // 回显远程地址
+        this.loadImgs()                  // 刷新宣传图列表
+        if (this.$refs.upload) this.$refs.upload.clearFiles()
       } else {
         this.$message.error(res.msg || '上传失败')
       }
     },
 
-    /* 上传前最后一次校验（可选） */
+    /* 上传前最后一次校验（与 handleChange 同口径，双保险） */
     beforeUpload(file) {
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) this.$message.error('大小不能超过 2MB')
-      return isLt2M
+      if (file.size > MAX_IMG_SIZE) {
+        this.$message.error('图片大小不能超过 5MB')
+        return false
+      }
+      return true
+    },
+    /* 后端拒绝时（超限/非图片/越权）展示后端 msg */
+    handleUploadError(err) {
+      const msg = err && err.response && err.response.data && err.response.data.msg
+      this.$message.error('上传失败：' + (msg || '网络错误'))
+    },
+    loadImgs() {
+      axios.post("http://localhost:12808/lycorisfunServer/api/getIndexIMG").then((res)=>{
+        this.imglinklist = (res.data && res.data.data) || []
+      }).catch(() => {})
     },
 
     updateStatus_connect(){
@@ -148,13 +170,7 @@ export default {
       console.log("出错了喵"+err)
     })
 
-    axios.post("http://localhost:12808/lycorisfunServer/api/getIndexIMG").then((res)=>{
-      console.log(res)
-      this.imglinklist=res.data.data;
-    }).catch(function (err){
-      console.log(err)
-      console.log("找不到方法喵")
-    })
+    this.loadImgs()
 
   }
 }
@@ -212,6 +228,7 @@ export default {
           :limit="1"
           :on-change="handleChange"
           :on-success="handleSuccess"
+          :on-error="handleUploadError"
           :before-upload="beforeUpload">
           <img v-if="imageUrl" :src="imageUrl" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
