@@ -140,6 +140,8 @@ src/
 | `SiteControl` | 宣传图增删（`/addIndexIMG`、`/deleteIndexIMG`）、功能开关（`/updateStatus`）、**全站公告编辑**（`/updateAnnouncement`） |
 | `Dashboard` / `ValueDemo` | `ValueDemo` 是演示残留，`Dashboard` 内若干 `jump*` 方法为死代码但未被模板引用 |
 
+**分页**：`PostControl` / `UserControl` / `NewsControl` 三个列表页已加分页（站内管理页未做）。采用**客户端分页** —— 这三个列表接口本来就是一次返回全部，前端也本来就全量持有，所以只加 `computed` 切片，不新增接口、不新增服务端查询。若将来单页上百行、或列表接口开始返回大字段，再照 `/postlistPage` 的既有做法改成服务端分页即可。
+
 ---
 
 ## 主题与样式

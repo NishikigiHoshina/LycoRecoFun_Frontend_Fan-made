@@ -1,6 +1,8 @@
 <script >
 import axios from "axios";
 
+const API = "http://localhost:12808/lycorisfunServer/api";
+
 export default{
   name:"PostControl",
   data(){
@@ -8,10 +10,12 @@ export default{
       postlist:null,
       editdialogVisible: false,
       detaildialogVisible: false,
-      currentpost:[],
-      currentRow: null,
+      currentpost:{},
       changepost:[],
       saving: false,
+      // 分页：/getPostList 一次返回全部（含评论与留言），这里在客户端切片
+      currentPage: 1,
+      pageSize: 10,
       // posts 表的 status 一列多用：1 帖子/评论、3 留言、0 软删除
       statusOptions:[
         { value:1, label:'1 · 正常（帖子/评论）' },
@@ -19,6 +23,21 @@ export default{
         { value:0, label:'0 · 已删除（软删）' },
       ],
 
+    }
+  },
+  computed: {
+    total() {
+      return (this.postlist || []).length
+    },
+    pageCount() {
+      return Math.max(1, Math.ceil(this.total / this.pageSize))
+    },
+    /** 当前页要展示的行；Math.min 对越界页自愈，避免"删掉末页最后一条后看到空表" */
+    pagedPosts() {
+      const list = this.postlist || []
+      const page = Math.min(this.currentPage, this.pageCount)
+      const start = (page - 1) * this.pageSize
+      return list.slice(start, start + this.pageSize)
     }
   },
   methods:{
@@ -29,11 +48,15 @@ export default{
         const payload = JSON.parse(JSON.stringify(this.changepost))
 
         // 2. 发 POST，Content-Type: application/json 自动设置
-        await axios.post('http://localhost:12808/lycorisfunServer/api/updatePostinfo', payload)
+        await axios.post(`${API}/updatePostinfo`, payload)
 
-        // 3. 成功回写 + 提示
-        const idx = this.currentRow - 1
-        this.$set(this.postlist, idx, payload)   // Vue2 响应式
+        // 3. 成功回写 + 提示。**按 postid 定位**，不能用「postid - 1」当下标：
+        //    行数远小于 id、且分页后可见行只是切片的一部分，按下标写会改错行；
+        //    越界时 $set 还会给数组追加元素，凭空多出一行、把分页总数也带偏。
+        const idx = this.postlist.findIndex(p => p.postid === payload.postid)
+        if (idx !== -1) {
+          this.$set(this.postlist, idx, { ...this.postlist[idx], ...payload })
+        }
         this.$message.success('已保存')
         this.editdialogVisible = false           // 保存成功才关弹窗，失败时保留用户输入
       } catch (err) {
@@ -43,8 +66,15 @@ export default{
         this.saving = false
       }
     },
-    setCurrent(row) {
-      this.$refs.singleTable.setCurrentRow(row);
+    /* 查看：直接用表格行，不再用「postid - 1」当下标 —— 行数与 id 都不保证连续 */
+    openDetail(row) {
+      this.currentpost = row
+      this.detaildialogVisible = true
+    },
+    /* 编辑：深拷贝一份，弹窗里的改动在提交前不污染列表 */
+    openEdit(row) {
+      this.changepost = JSON.parse(JSON.stringify(row))
+      this.editdialogVisible = true
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -53,27 +83,44 @@ export default{
           })
           .catch(_ => {});
     },
-    handleCurrentChange(val) {
-      this.currentRow = val;
+    async deletepost(row) {
+      try {
+        await this.$confirm(`确认删除帖子《${row.title || ('#' + row.postid)}》？`, '提示', { type: 'warning' })
+      } catch (cancel) {
+        return   // 点了取消
+      }
+      try {
+        await axios.post(`${API}/deletePost?postid=` + row.postid)
+        this.$message.success('已删除')
+        await this.loadPosts()          // 重新拉列表，让软删后的状态立即反映出来
+      } catch (err) {
+        const msg = err.response && err.response.data && err.response.data.msg
+        this.$message.error(msg || err.message || '删除失败')
+      }
     },
-    loadinfo(){
-      this.currentpost = JSON.parse(JSON.stringify(this.postlist[this.currentRow-1]))
-      //深拷贝-将json数据复制一遍，再赋给新变量
-      this.changepost = JSON.parse(JSON.stringify(this.postlist[this.currentRow-1]))
-      // this.changepost=this.postlist[this.currentRow-1];浅拷贝-不同变量指向相同地址
+    async loadPosts() {
+      try {
+        const res = await axios.get(`${API}/getPostList`)
+        this.postlist = res.data
+        this.clampPage()
+      } catch (err) {
+        console.log(err)
+      }
     },
-    deletepost(){
-      axios.post('http://localhost:12808/lycorisfunServer/api/deletePost?postid='+this.currentRow)
-          .catch(err => console.warn('[PostControl] 删除帖子请求失败:', err))
+    /** 列表变动后把页码收回有效范围 */
+    clampPage() {
+      if (this.currentPage > this.pageCount) this.currentPage = this.pageCount
+    },
+    handleSizeChange(size) {
+      this.pageSize = size
+      this.currentPage = 1
+    },
+    handlePageChange(page) {
+      this.currentPage = page
     }
   },
   created() {
-    axios.get("http://localhost:12808/lycorisfunServer/api/getPostList").then((res)=>{
-      console.log(res.data)
-      this.postlist=res.data;
-    }).catch(function (err){
-      console.log(err)
-    });
+    this.loadPosts()
   }
 
 }
@@ -99,7 +146,7 @@ export default{
           <th>操作</th>
         </tr>
         </thead>
-          <tr  v-for="post in postlist" :key="post.postid">
+          <tr  v-for="post in pagedPosts" :key="post.postid">
             <td>{{post.postid}}</td>
             <td>{{post.title}}</td>
             <td>{{post.content}}</td>
@@ -107,14 +154,27 @@ export default{
             <td>{{post.root_id}}</td>
             <td>{{post.status}}</td>
             <td>{{post.post_username}}</td>
-            <td><el-button type="text" @click="function(){currentRow=post.postid;loadinfo();detaildialogVisible=true}">查看</el-button><br>
-              <el-button type="text" @click="function(){currentRow=post.postid;loadinfo();editdialogVisible=true;}">编辑</el-button><br>
-              <el-button type="text" @click="function(){$confirm('确认删除？').then(deletepost).catch(_ => {}); currentRow=post.postid;loadinfo();}">删除</el-button></td>
+            <td><el-button type="text" @click="openDetail(post)">查看</el-button><br>
+              <el-button type="text" @click="openEdit(post)">编辑</el-button><br>
+              <el-button type="text" @click="deletepost(post)">删除</el-button></td>
           </tr>
       </table>
       <div v-else>
         <h2 style="color: red">查询不到数据喵，请检查服务器状态喵！</h2>
       </div>
+    </div>
+    <!-- 分页：total>0 时始终显示（若改成"超过一页才显示"，把 pageSize 调大后控件会消失、切不回来） -->
+    <div class="pager" v-if="total > 0">
+      <el-pagination
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :page-sizes="[10, 20, 50, 100]"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange">
+      </el-pagination>
     </div>
     <div>
 <!--      编辑框-->
@@ -242,4 +302,11 @@ tbody tr:last-child td { border-bottom: none; }
 
 /* 编辑弹窗里的“帖子状态”下拉：与同弹窗的 el-input 等宽（el-select 默认按内容收缩） */
 .el-select { width: 100%; }
+
+/* 分页控件：居中，与表格留出间距 */
+.pager {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 26px;
+}
 </style>

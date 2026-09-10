@@ -14,6 +14,9 @@ export default{
       currentuser:{},        // 查看：当前选中用户（只读，直接引用表格行）
       changeuser:{},         // 编辑：可改副本，提交的就是它
       saving: false,
+      // 分页：/userlist 一次返回全部，这里在客户端切片（见下方 pagedUsers）
+      currentPage: 1,
+      pageSize: 10,
       // 状态取值与后端校验一致：1 正常 / 2 停用 / 3 管理员
       statusOptions:[
         { value:1, label:'1 · 正常' },
@@ -94,9 +97,36 @@ export default{
       try {
         const res = await axios.get(`${API}/userlist`)
         this.userlist = res.data
+        this.clampPage()
       } catch (err) {
         console.log(err)
       }
+    },
+    /** 列表变动后把页码收回有效范围（删除/刷新都走这里） */
+    clampPage() {
+      if (this.currentPage > this.pageCount) this.currentPage = this.pageCount
+    },
+    handleSizeChange(size) {
+      this.pageSize = size
+      this.currentPage = 1
+    },
+    handlePageChange(page) {
+      this.currentPage = page
+    }
+  },
+  computed: {
+    total() {
+      return (this.userlist || []).length
+    },
+    pageCount() {
+      return Math.max(1, Math.ceil(this.total / this.pageSize))
+    },
+    /** 当前页要展示的行；Math.min 对越界页自愈，避免"删掉末页最后一条后看到空表" */
+    pagedUsers() {
+      const list = this.userlist || []
+      const page = Math.min(this.currentPage, this.pageCount)
+      const start = (page - 1) * this.pageSize
+      return list.slice(start, start + this.pageSize)
     }
   },
   created() {
@@ -128,7 +158,7 @@ export default{
           <th>操作</th>
         </tr>
         </thead>
-          <tr  v-for="user in userlist" :key="user.userId">
+          <tr  v-for="user in pagedUsers" :key="user.userId">
             <td>{{user.userId}}</td>
             <td>{{user.userName}}</td>
             <td>{{user.gender}}</td>
@@ -146,6 +176,19 @@ export default{
       <div v-else>
         <h2 style="color: red">查询不到数据喵，请检查服务器状态喵！</h2>
       </div>
+    </div>
+    <!-- 分页：total>0 时始终显示（若改成"超过一页才显示"，把 pageSize 调大后控件会消失、切不回来） -->
+    <div class="pager" v-if="total > 0">
+      <el-pagination
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :page-sizes="[10, 20, 50, 100]"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange">
+      </el-pagination>
     </div>
     <div>
       <!--      编辑框-->
@@ -258,4 +301,11 @@ tbody tr:last-child td { border-bottom: none; }
 
 /* 编辑弹窗里的“状态”下拉：与同弹窗的 el-input 等宽（el-select 默认按内容收缩） */
 .el-select { width: 100%; }
+
+/* 分页控件：居中，与表格留出间距 */
+.pager {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 26px;
+}
 </style>

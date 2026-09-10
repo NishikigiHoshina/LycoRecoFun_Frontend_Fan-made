@@ -13,7 +13,28 @@ export default {
       detaildialogVisible: false,
       createForm: { title: '', imgurl: '', news_link: '', time: '' },
       editingNews: { news_id: 0, title: '', imgurl: '', news_link: '', time: '', status: 1 },
-      viewingNews: {}
+      viewingNews: {},
+      // 分页：列表接口一次返回全部，这里在客户端切片（见下方 pagedNews 的说明）
+      currentPage: 1,
+      pageSize: 10
+    }
+  },
+  computed: {
+    total() {
+      return (this.newslist || []).length
+    },
+    pageCount() {
+      return Math.max(1, Math.ceil(this.total / this.pageSize))
+    },
+    /**
+     * 当前页要展示的行。
+     * 用 Math.min 对越界页做自愈：删掉末页最后一条后不必再手动兜底，否则会看到一张空表。
+     */
+    pagedNews() {
+      const list = this.newslist || []
+      const page = Math.min(this.currentPage, this.pageCount)
+      const start = (page - 1) * this.pageSize
+      return list.slice(start, start + this.pageSize)
     }
   },
   methods: {
@@ -21,10 +42,22 @@ export default {
       this.loading = true
       axios.post("http://localhost:12808/lycorisfunServer/api/newslistAll").then((res) => {
         this.newslist = res.data || []
+        this.clampPage()
       }).catch(err => {
         console.log(err)
         this.$message.error('新闻列表加载失败：' + (err.response?.data?.msg || err.message))
       }).finally(() => { this.loading = false })
+    },
+    /** 列表变动后把页码收回有效范围（删除/新建/刷新都走这里） */
+    clampPage() {
+      if (this.currentPage > this.pageCount) this.currentPage = this.pageCount
+    },
+    handleSizeChange(size) {
+      this.pageSize = size
+      this.currentPage = 1
+    },
+    handlePageChange(page) {
+      this.currentPage = page
     },
     statusText(s) { return s === 0 ? '已删除' : '正常' },
     statusType(s) { return s === 0 ? 'info' : 'success' },
@@ -137,7 +170,7 @@ export default {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="news in newslist" :key="news.news_id">
+          <tr v-for="news in pagedNews" :key="news.news_id">
             <td>{{ news.news_id }}</td>
             <td class="cell-title">{{ news.title }}</td>
             <td>{{ news.time }}</td>
@@ -155,6 +188,20 @@ export default {
     </div>
     <div v-else-if="!loading" class="empty">
       <h2>查询不到数据喵，请检查服务器状态喵！</h2>
+    </div>
+
+    <!-- 分页：始终在 total>0 时显示（若改成"超过一页才显示"，把 pageSize 调大后控件会消失、就切不回来了） -->
+    <div class="pager" v-if="total > 0">
+      <el-pagination
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :page-sizes="[10, 20, 50, 100]"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange">
+      </el-pagination>
     </div>
 
     <!-- 新建新闻 -->
@@ -268,5 +315,12 @@ tbody tr:last-child td { border-bottom: none; }
   text-align: center;
   color: var(--color-muted);
   padding: 40px 0;
+}
+
+/* 分页控件：居中，与表格卡片留出间距 */
+.pager {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 26px;
 }
 </style>
