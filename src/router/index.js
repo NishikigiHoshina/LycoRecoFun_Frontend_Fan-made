@@ -21,6 +21,7 @@ import TakeMessage from '@/views/frontViews/TakeMessage.vue';
 import Login from '@/views/frontViews/Login.vue';
 import WritePost from '@/views/frontViews/WritePost.vue';
 import UploadWork from '@/views/frontViews/UploadWork.vue';
+import NotFound from '@/views/frontViews/NotFound.vue';
 
 Vue.use(VueRouter)
 
@@ -77,6 +78,11 @@ const routes = [
       { path: 'uploadwork', name: 'uploadwork', component: UploadWork },
     ],
   },
+
+  /* 404 兜底：必须放在数组最后（vue-router 3 按声明顺序匹配，通配符会吃掉后面所有路由）。
+     用 component 而非 redirect，URL 才会原样保留，页面才能把出错的地址回显给用户。 */
+  { path: '/404', name: 'notFound', component: NotFound },
+  { path: '*', component: NotFound },
 ]
 
 const router = new VueRouter({

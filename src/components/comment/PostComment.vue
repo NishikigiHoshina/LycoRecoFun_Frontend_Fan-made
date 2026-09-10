@@ -72,26 +72,44 @@ export default {
   },
   data() {
     return {
-      list: [],
-      total: 0,
-      page: 1,
+      allList: [],        // 后端一次返回该帖全部顶级评论
+      list: [],           // 当前已展开的切片（模板渲染这个）
+      page: 1,            // 已展开到第几页
+      pageSize: 10,
       editor: { content: '', loading: false }
     }
   },
   computed: {
+    total() {
+      return this.allList.length
+    },
     hasMore() {
-      return this.total > this.list.length
+      return this.list.length < this.allList.length
     }
   },
   created() {
-    this.fetchComments(1)
+    this.fetchComments()
   },
   methods: {
+    /* 拉取该帖全部顶级评论并重置回第一页。
+       后端 /getReply 是"一次返回全部"，并不支持分页参数，所以此处不能在服务端分页：
+       旧实现把 total 直接设成 list.length，使 hasMore 恒为 false，"加载更多"永远不可见。
+       改为一次取全、客户端按 page/pageSize 逐步展开。 */
     async fetchComments() {
-      const list = await getReply(this.postId)  // 已经驼峰化
-      console.log('【getReply 返回值】', list)   // ← 看这里
-      this.list = list
-      this.total = list.length
+      try {
+        const list = await getReply(this.postId)
+        this.allList = list || []
+      } catch (e) {
+        // 失败原因已由 utils/request.js 统一弹窗提示，这里只记录并清空
+        console.warn('[PostComment] 获取评论失败:', e)
+        this.allList = []
+      }
+      this.page = 1
+      this.applyPage()
+    },
+    /* 按 page/pageSize 从完整列表切出当前可见部分 */
+    applyPage() {
+      this.list = this.allList.slice(0, this.page * this.pageSize)
     },
     async submitComment() {
       if (!this.editor.content.trim()) return
@@ -114,10 +132,12 @@ export default {
       if (item.showReply && !item.replies) this.$set(item, 'replies', [])
     },
     refresh() {
-      this.fetchComments(1)
+      this.fetchComments()
     },
+    /* 完整列表已在内存里，加载更多只需扩大切片，无需再请求 */
     loadMore() {
-      this.fetchComments(this.page + 1)
+      this.page += 1
+      this.applyPage()
     }
   },
   filters: {

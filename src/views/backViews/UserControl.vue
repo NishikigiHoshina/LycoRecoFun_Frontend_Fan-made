@@ -1,5 +1,8 @@
 <script>
 import axios from "axios";
+import { warnIfUnsupported } from "@/utils/validate";
+
+const API = "http://localhost:12808/lycorisfunServer/api";
 
 export default{
   name:"UserControl",
@@ -8,31 +11,56 @@ export default{
       userlist:null,
       editdialogVisible: false,
       detaildialogVisible: false,
-      currentuser:[],
-      currentRow: null,
-      changeuser:[],
-
+      currentuser:{},        // 查看：当前选中用户（只读，直接引用表格行）
+      changeuser:{},         // 编辑：可改副本，提交的就是它
+      saving: false,
+      // 状态取值与后端校验一致：1 正常 / 2 停用 / 3 管理员
+      statusOptions:[
+        { value:1, label:'1 · 正常' },
+        { value:2, label:'2 · 停用' },
+        { value:3, label:'3 · 管理员' },
+      ],
     }
   },
   methods:{
-    async submit() {
-      try {
-        // 1. 深拷贝一份，避免提交过程中意外修改原数据
-        const payload = JSON.parse(JSON.stringify(this.currentuser))
-
-        // 2. 发 POST，Content-Type: application/json 自动设置
-        await axios.post('http://localhost:12808/lycorisfunServer/api/updatePostinfo', payload)
-
-        // 3. 成功回写 + 提示
-        const idx = this.currentRow - 1
-        this.$set(this.userlist, idx, payload)   // Vue2 响应式
-        this.$message.success('已保存')
-      } catch (err) {
-        this.$message.error(err.message || '保存失败')
-      }
+    /* 查看：直接用表格行，无需拷贝 */
+    openDetail(user){
+      this.currentuser = user
+      this.detaildialogVisible = true
     },
-    setCurrent(row) {
-      this.$refs.singleTable.setCurrentRow(row);
+    /* 编辑：深拷贝一份，弹窗里的改动在提交前不污染列表 */
+    openEdit(user){
+      this.changeuser = JSON.parse(JSON.stringify(user))
+      this.editdialogVisible = true
+    },
+    async submit() {
+      if (warnIfUnsupported(this, [
+        { name: '用户名', value: this.changeuser.userName },
+        { name: '签名', value: this.changeuser.signature },
+        { name: '头像链接', value: this.changeuser.avaterURL },
+        { name: '个人主页链接', value: this.changeuser.PersonalIndexLink },
+      ])) return
+
+      this.saving = true
+      try {
+        // 提交的是弹窗绑定的 changeuser（此前误提交 currentuser，导致输入被丢弃）
+        const payload = JSON.parse(JSON.stringify(this.changeuser))
+        const res = await axios.post(`${API}/updateUserinfo`, payload)
+        const saved = (res.data && res.data.data) || payload
+
+        // 按 userId 定位回写：userId 不保证连续，不能用「行号 = id - 1」
+        const idx = this.userlist.findIndex(u => u.userId === saved.userId)
+        if (idx !== -1) {
+          this.$set(this.userlist, idx, { ...this.userlist[idx], ...saved })
+        }
+        this.$message.success((res.data && res.data.msg) || '已保存')
+        this.editdialogVisible = false
+      } catch (err) {
+        const msg = err.response && err.response.data && err.response.data.msg
+        this.$message.error(msg || err.message || '保存失败')
+      } finally {
+        this.saving = false
+      }
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -41,27 +69,38 @@ export default{
           })
           .catch(_ => {});
     },
-    handleCurrentChange(val) {
-      this.currentRow = val;
+    /* 删除用户：走后端 /deleteUser（软删除 → users.status=2「停用」）。
+       修复前这里打的是 /deletePost?postid=<userId>，删用户 #5 会把帖子 #5 一起删掉。 */
+    async deleteuser(user) {
+      try {
+        await this.$confirm(
+            `确认删除用户「${user.userName}」（ID ${user.userId}）？该操作会将其状态置为「停用」。`,
+            '提示',
+            { type: 'warning' }
+        )
+      } catch (cancel) {
+        return   // 点了取消，什么都不做
+      }
+      try {
+        const res = await axios.post(`${API}/deleteUser?userid=` + user.userId)
+        this.$message.success((res.data && res.data.msg) || '删除成功')
+        await this.loadUsers()          // 重新拉列表，状态列立即变「2」
+      } catch (err) {
+        const msg = err.response && err.response.data && err.response.data.msg
+        this.$message.error(msg || err.message || '删除失败')
+      }
     },
-    loadinfo(){
-      this.currentuser = JSON.parse(JSON.stringify(this.userlist[this.currentRow-1]))
-      //深拷贝-将json数据复制一遍，再赋给新变量
-      this.changeuser = JSON.parse(JSON.stringify(this.userlist[this.currentRow-1]))
-      // this.changepost=this.postlist[this.currentRow-1];浅拷贝-不同变量指向相同地址
-    },
-    deleteuser(){
-      axios.post('http://localhost:12808/lycorisfunServer/api/deletePost?postid='+this.currentRow)
-          .catch(err => console.warn('[UserControl] 删除用户请求失败:', err))
+    async loadUsers() {
+      try {
+        const res = await axios.get(`${API}/userlist`)
+        this.userlist = res.data
+      } catch (err) {
+        console.log(err)
+      }
     }
   },
   created() {
-    axios.get("http://localhost:12808/lycorisfunServer/api/userlist").then((res)=>{
-      console.log(res.data)
-      this.userlist=res.data;
-    }).catch(function (err){
-      console.log(err)
-    });
+    this.loadUsers()
   }
 
 }
@@ -99,9 +138,9 @@ export default{
             <td>{{user.email}}</td>
             <td>{{user.PersonalIndexLink}}</td>
             <td>{{user.status}}</td>
-            <td><el-button type="text" @click="function(){currentRow=user.userId;loadinfo();detaildialogVisible=true}">查看</el-button><br>
-              <el-button type="text" @click="function(){currentRow=user.userId;loadinfo();editdialogVisible=true;}">编辑</el-button><br>
-              <el-button type="text" @click="function(){$confirm('确认删除？').then(deleteuser).catch(_ => {}); currentRow=user.userId;loadinfo();}">删除</el-button></td>
+            <td><el-button type="text" @click="openDetail(user)">查看</el-button><br>
+              <el-button type="text" @click="openEdit(user)">编辑</el-button><br>
+              <el-button type="text" @click="deleteuser(user)">删除</el-button></td>
           </tr>
       </table>
       <div v-else>
@@ -115,7 +154,8 @@ export default{
           :visible.sync="editdialogVisible"
           width="30%"
           :before-close="handleClose">
-        <p><span>用户id</span><el-input v-model="changeuser.userId" placeholder="请输入内容"></el-input></p>
+        <!-- userId 是主键，改动会把更新打到别的用户身上；这里锁死只读 -->
+        <p><span>用户id</span><el-input v-model="changeuser.userId" disabled placeholder="不可修改"></el-input></p>
         <p><span>用户名</span><el-input v-model="changeuser.userName" placeholder="请输入内容"></el-input></p>
         <p><span>性别</span><el-input v-model="changeuser.gender" placeholder="请输入内容"></el-input></p>
         <p><span>签名</span><el-input
@@ -128,13 +168,22 @@ export default{
         <p><span>头像链接</span><el-input v-model="changeuser.avaterURL" placeholder="请输入内容"></el-input></p>
         <p><span>邮箱</span><el-input v-model="changeuser.email" placeholder="请输入内容"></el-input></p>
         <p><span>个人主页链接</span><el-input v-model="changeuser.PersonalIndexLink" placeholder="请输入内容"></el-input></p>
-        <p><span>状态</span><el-input v-model="changeuser.status" placeholder="请输入内容"></el-input></p>
+        <p><span>状态</span>
+          <el-select v-model="changeuser.status" placeholder="请选择状态">
+            <el-option
+                v-for="opt in statusOptions"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value">
+            </el-option>
+          </el-select>
+        </p>
         <span slot="footer" class="dialog-footer">
     <el-button @click="function(){editdialogVisible = false;}">取 消</el-button>
-    <el-button type="primary" @click="function(){$confirm('确认修改？').then(_ => {
+    <el-button type="primary" :loading="saving" @click="function(){$confirm('确认修改？').then(_ => {
             submit();
           })
-          .catch(_ => {}); editdialogVisible = false;}">提 交</el-button>
+          .catch(_ => {});}">提 交</el-button>
   </span>
       </el-dialog>
       <!--查看框-->
@@ -145,11 +194,11 @@ export default{
           :before-close="handleClose">
         <h2>用户id:</h2>
         <h3>{{currentuser.userId}}</h3>
-        <h2>标题:</h2>
+        <h2>用户名:</h2>
         <h3>{{currentuser.userName}}</h3>
-        <h2>用户id:</h2>
+        <h2>性别:</h2>
         <h3>{{currentuser.gender}}</h3>
-        <h2>前面:</h2>
+        <h2>签名:</h2>
         <h3>{{currentuser.signature}}</h3>
         <h2>注册时间:</h2>
         <h3>{{currentuser.registerTime}}</h3>
@@ -206,4 +255,7 @@ td {
 }
 tbody tr:hover { background: var(--color-surface-hover); }
 tbody tr:last-child td { border-bottom: none; }
+
+/* 编辑弹窗里的“状态”下拉：与同弹窗的 el-input 等宽（el-select 默认按内容收缩） */
+.el-select { width: 100%; }
 </style>

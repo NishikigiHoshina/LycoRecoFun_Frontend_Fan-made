@@ -112,7 +112,8 @@ export default {
                 <!-- hover 才浮现的信息层 -->
                 <div class="info">
                   <h2>{{ news.title }}</h2>
-                  <a :href="news.link"  target="_blank" rel="noopener">
+                  <!-- news 表实际列名为 news_link（后端 News 实体同名字段），勿写成 news.link -->
+                  <a :href="news.news_link"  target="_blank" rel="noopener">
                     <el-button type="text" >查看详情</el-button>
                   </a>
                 </div>

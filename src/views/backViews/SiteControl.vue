@@ -1,5 +1,6 @@
 <script>
 import axios from "axios";
+import { warnIfUnsupported } from "@/utils/validate";
 
 // 与后端 lycorisfun.upload.types.index-img.* 保持一致（后端调整配置时请同步此处）
 const MAX_IMG_SIZE = 5 * 1024 * 1024   // 5MB
@@ -9,7 +10,9 @@ export default {
   name:"SiteControl",
   data(){
     return{
-      Announcement:null,
+      Announcement:'',             // 公告正文（可直接编辑）
+      announcementLoaded:false,    // 是否成功从服务器读到当前公告
+      savingAnnouncement:false,
       connect_function:false,
       upload_function:false,
       database_function:false,
@@ -101,6 +104,26 @@ export default {
       }).catch(() => {})
     },
 
+    /* 更新全站公告：后端 /updateAnnouncement（仅管理员）。
+       公告寄存在 news 表 imgUrl 为 NULL 的行，正文放 news_link 列 */
+    async updateAnnouncement() {
+      if (warnIfUnsupported(this, [{ name: '公告内容', value: this.Announcement }])) return
+      this.savingAnnouncement = true
+      try {
+        const res = await axios.post(
+            "http://localhost:12808/lycorisfunServer/api/updateAnnouncement",
+            { content: this.Announcement }
+        )
+        this.$message.success((res.data && res.data.msg) || '公告已更新')
+        this.announcementLoaded = true
+      } catch (err) {
+        const msg = err.response && err.response.data && err.response.data.msg
+        this.$message.error(msg || err.message || '公告更新失败')
+      } finally {
+        this.savingAnnouncement = false
+      }
+    },
+
     updateStatus_connect(){
       var newstatus;
       if(this.connect_function){
@@ -143,7 +166,8 @@ export default {
   created() {
     axios.post("http://localhost:12808/lycorisfunServer/api/getAnnouncement").then((res)=>{
       console.log(res)
-      this.Announcement=res.data;
+      this.Announcement=res.data || '';
+      this.announcementLoaded=true;
     }).catch(function (err){
       console.log(err)
       console.log("找不到方法喵")
@@ -181,18 +205,14 @@ export default {
 <h1>站内管理</h1>
   <hr>
   <div>
-    <div v-if="Announcement">
+    <div>
       <h3>全站公告:</h3>
-      <textarea style="width: 50vh; height: 8vh;">
-        {{Announcement}}
-      </textarea>
-      <el-button>更新</el-button>
-    </div>
-    <div v-else>
-      <h3>全站公告:</h3>
-      <textarea style="width: 50vh; height: 8vh;">
-        无法连接到服务器，请检查网络
-      </textarea>
+      <!-- 文本框始终可编辑：公告为空（或读取失败）时也要能输入新内容后保存 -->
+      <textarea v-model="Announcement" placeholder="输入要展示在首页的全站公告"></textarea>
+      <el-button type="primary" :loading="savingAnnouncement" @click="updateAnnouncement">更 新</el-button>
+      <p v-if="!announcementLoaded" class="hint">
+        未能从服务器读取当前公告，仍可在上方填写内容后点击「更新」写入。
+      </p>
     </div>
     <hr>
     <div>
@@ -332,6 +352,13 @@ textarea {
   outline: none;
 }
 textarea:focus { border-color: var(--color-secondary); }
+
+/* 公告读取失败时的提示（不阻挡编辑与保存） */
+.hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-muted);
+}
 
 /* ---- 宣传图白卡条 ---- */
 .clearfix {
