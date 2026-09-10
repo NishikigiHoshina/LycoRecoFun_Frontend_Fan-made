@@ -1,9 +1,12 @@
 <script >
 import axios from "axios";
 import PostComment from '@/components/comment/PostComment.vue'
+import PostBody from '@/components/post/PostBody.vue'
+import { htmlToDoc } from '@/utils/postDoc'
+import { resolveAssetUrl } from '@/utils/asset'
 export default {
   name:'posts',
-  components: { PostComment },
+  components: { PostComment, PostBody },
   data(){
     return{
       postid:this.$route.params.id,
@@ -16,6 +19,45 @@ export default {
     avatarInitial(){
       const n = this.post && this.post.post_username;
       return (n && n.trim()) ? n.trim().charAt(0).toUpperCase() : '?';
+    },
+    /**
+     * 正文节点数组，交给 <post-body> 渲染（全站不再用 v-html）。
+     * - 新帖：`doc` 是结构化文档 JSON；
+     * - 存量帖：`doc` 为 null，`content` 里是短 HTML —— 走同一个白名单转换器现转现渲染
+     *   （DOMParser 只解析不执行，且不插入真实文档），因此老帖无需数据迁移也能安全打开。
+     */
+    bodyNodes(){
+      const p = this.post;
+      if (!p) return [];
+      if (p.doc) {
+        try {
+          const parsed = JSON.parse(p.doc);
+          return Array.isArray(parsed && parsed.nodes) ? parsed.nodes : [];
+        } catch (e) {
+          console.warn('[PostDetail] 正文文档解析失败:', e);
+          return [];
+        }
+      }
+      return p.content ? htmlToDoc(p.content).nodes : [];
+    },
+    // 封面图绝对地址：imgurl 存的是相对上传路径（/upload/post/…），渲染时补 origin
+    coverUrl(){
+      return (this.post && this.post.imgurl) ? resolveAssetUrl(this.post.imgurl) : '';
+    },
+    // 附图块：服务端用正文首图回填了 imgurl，若该图已在正文里出现就不必再单列一次
+    showCoverImage(){
+      const p = this.post;
+      if (!p || !p.imgurl) return false;
+      const srcs = [];
+      const walk = (nodes) => {
+        for (const n of nodes) {
+          if (!n || typeof n !== 'object') continue;
+          if (n.t === 'img' && n.src) srcs.push(n.src);
+          else if (Array.isArray(n.c)) walk(n.c);
+        }
+      };
+      walk(this.bodyNodes);
+      return !srcs.includes(p.imgurl);
     }
   },
   created() {
@@ -73,12 +115,13 @@ export default {
                 </div>
               </header>
 
-              <!-- 正文（富文本） -->
-              <div class="article-body rich-content" v-html="post.content"></div>
+              <!-- 正文：由结构化文档渲染，不使用 v-html（见 components/post/PostBody.vue） -->
+              <post-body v-if="bodyNodes.length" :nodes="bodyNodes" class="article-body"/>
+              <p v-else class="article-body">（正文为空）</p>
 
-              <!-- 附图 -->
-              <div v-if="post.imgurl" class="article-image">
-                <img :src="post.imgurl" alt="附图"/>
+              <!-- 附图：仅当封面图未出现在正文里时单列，避免同一张图显示两次 -->
+              <div v-if="showCoverImage" class="article-image">
+                <img :src="coverUrl" alt="附图"/>
               </div>
 
               <!-- 相关链接 -->

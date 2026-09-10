@@ -12,7 +12,7 @@
   --color-deco-a:     #2a96fa;   /* 蓝 */
   --color-deco-b:     #ffe76c;   /* 黄 */
   --color-deco-c:     #7a5668;   /* 紫 */
-  --color-bg:         #ffffff;   /* 页面背景 */
+  --color-bg: rgb(228, 228, 228);   /* 页面背景 */
   --color-surface:    #ffffff;   /* 卡片表面 */
   --color-border:     #e5e5e5;   /* 细分隔线 */
   --color-border-strong:#cfd3d8; /* 输入框/控件描边 */

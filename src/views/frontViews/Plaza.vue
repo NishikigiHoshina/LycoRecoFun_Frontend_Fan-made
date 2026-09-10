@@ -1,6 +1,7 @@
 <script>
 import axios from "axios";
 import { isLoggedIn } from "@/utils/auth";
+import { resolveAssetUrl } from "@/utils/asset";
 export default {
   name:'Plaza',
   data(){
@@ -84,6 +85,15 @@ export default {
       el.classList.add('is-rippling');
     },
     rippleOff(e){ e.currentTarget.classList.remove('is-rippling'); },
+    // 封面色 + 逐个错开的入场延迟，合成一个 style 对象（整块交给 :style，避免模板里再拼字符串）
+    // imgurl 存的是相对上传路径（/upload/post/…），渲染时补 origin；无图则不设背景
+    coverStyle(o, index){
+      const url = o && o.imgurl ? resolveAssetUrl(o.imgurl) : '';
+      return {
+        backgroundImage: url ? `url(${url})` : 'none',
+        animationDelay: (index % 6) * 0.06 + 's',
+      };
+    },
 
   },
   computed:{
@@ -139,7 +149,7 @@ export default {
                 <section
                     v-for="(o,index) in postinfo" :key="o.postid"
                     class="image card hov-card anim-rise"
-                    :style="{ backgroundImage: `url(${o.imgurl})`, animationDelay: (index % 6) * 0.06 + 's' }"
+                    :style="coverStyle(o, index)"
                     @mousemove="rippleOn"
                     @mouseleave="rippleOff"
                 >
@@ -148,6 +158,8 @@ export default {
                   <div class="content">
                     <h2>{{o.title}}</h2>
                     <p class="author-line">by:{{o.post_username}}</p>
+                    <!-- 正文摘要：新帖由服务端从文档生成；存量帖由服务端剥标签后给出纯文本 -->
+                    <p v-if="o.content" class="excerpt">{{o.content}}</p>
                     <time class="time">{{o.created_at}} </time>
                     <el-button type="text" @click="$router.push(`posts/${o.postid}`)">details</el-button>
                   </div>
@@ -334,6 +346,17 @@ body{
   font-weight: 600;
 }
 .content .time { color: var(--color-muted); display: inline-block; margin-right: 8px; }
+/* 正文摘要：固定两行，避免长短不一把卡片撑破 */
+.content .excerpt {
+  margin: 2px 0 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
 .limit{
   width: 200px;

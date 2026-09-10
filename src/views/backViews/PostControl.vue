@@ -11,11 +11,19 @@ export default{
       currentpost:[],
       currentRow: null,
       changepost:[],
+      saving: false,
+      // posts 表的 status 一列多用：1 帖子/评论、3 留言、0 软删除
+      statusOptions:[
+        { value:1, label:'1 · 正常（帖子/评论）' },
+        { value:3, label:'3 · 留言' },
+        { value:0, label:'0 · 已删除（软删）' },
+      ],
 
     }
   },
   methods:{
     async submit() {
+      this.saving = true
       try {
         // 1. 深拷贝一份，避免提交过程中意外修改原数据
         const payload = JSON.parse(JSON.stringify(this.changepost))
@@ -27,8 +35,12 @@ export default{
         const idx = this.currentRow - 1
         this.$set(this.postlist, idx, payload)   // Vue2 响应式
         this.$message.success('已保存')
+        this.editdialogVisible = false           // 保存成功才关弹窗，失败时保留用户输入
       } catch (err) {
-        this.$message.error(err.message || '保存失败')
+        const msg = err.response && err.response.data && err.response.data.msg
+        this.$message.error(msg || err.message || '保存失败')
+      } finally {
+        this.saving = false
       }
     },
     setCurrent(row) {
@@ -79,7 +91,7 @@ export default{
         <tr>
           <th>帖子id</th>
           <th>标题</th>
-          <th>内容</th>
+          <th>摘要</th>
           <th>创建时间</th>
           <th>根节点</th>
           <th>状态</th>
@@ -111,30 +123,43 @@ export default{
           :visible.sync="editdialogVisible"
           width="30%"
           :before-close="handleClose">
-        <p><span>帖子id</span><el-input v-model="changepost.postid" placeholder="请输入内容"></el-input></p>
-        <p><span>标题</span><el-input v-model="changepost.title" placeholder="请输入内容"></el-input></p>
-        <p><span>用户id</span><el-input v-model="changepost.post_userid" placeholder="请输入内容"></el-input></p>
-        <p><span>内容</span><el-input
+        <!-- 只有 标题 / 摘要 / 状态 可改，其余全部只读：
+             ① 正文已是结构化文档（另存 post_bodies），后台不做文档编辑器，故只展示摘要；
+             ② postid 是主键、post_userid 是作者，误改会把更新打到别的行；
+             ③ 计数与层级字段由业务流程维护，手改只会造成数据不一致。 -->
+        <p><span>帖子id</span><el-input v-model="changepost.postid" disabled placeholder="不可修改"></el-input></p>
+        <p><span>标题</span><el-input v-model="changepost.title" placeholder="请输入标题"></el-input></p>
+        <p><span>用户id</span><el-input v-model="changepost.post_userid" disabled placeholder="不可修改"></el-input></p>
+        <p><span>摘要</span><el-input
             type="textarea"
             :rows="2"
-            placeholder="请输入内容"
+            placeholder="列表页展示的纯文本摘要"
             v-model="changepost.content">
         </el-input></p>
-        <p><span>创建时间</span><el-input v-model="changepost.created_at" placeholder="请输入内容"></el-input></p>
-        <p><span>点赞数</span><el-input v-model="changepost.like_count" placeholder="请输入内容"></el-input></p>
-        <p><span>跳转链接</span><el-input v-model="changepost.link" placeholder="请输入内容"></el-input></p>
-        <p><span>图片链接</span><el-input v-model="changepost.imgurl" placeholder="请输入内容"></el-input></p>
-        <p><span>父节点id</span><el-input v-model="changepost.parent_id" placeholder="请输入内容"></el-input></p>
-        <p><span>根节点id</span><el-input v-model="changepost.root_id" placeholder="请输入内容"></el-input></p>
-        <p><span>帖子状态</span><el-input v-model="changepost.status" placeholder="请输入内容"></el-input></p>
-        <p><span>回复统计</span><el-input v-model="changepost.reply_count" placeholder="请输入内容"></el-input></p>
-        <p><span>发帖人用户名</span><el-input v-model="changepost.post_username" placeholder="请输入内容"></el-input></p>
+        <p><span>创建时间</span><el-input v-model="changepost.created_at" disabled placeholder="不可修改"></el-input></p>
+        <p><span>点赞数</span><el-input v-model="changepost.like_count" disabled placeholder="不可修改"></el-input></p>
+        <p><span>跳转链接</span><el-input v-model="changepost.link" disabled placeholder="不可修改"></el-input></p>
+        <p><span>图片链接</span><el-input v-model="changepost.imgurl" disabled placeholder="不可修改"></el-input></p>
+        <p><span>父节点id</span><el-input v-model="changepost.parent_id" disabled placeholder="不可修改"></el-input></p>
+        <p><span>根节点id</span><el-input v-model="changepost.root_id" disabled placeholder="不可修改"></el-input></p>
+        <p><span>帖子状态</span>
+          <el-select v-model="changepost.status" placeholder="请选择状态">
+            <el-option
+                v-for="opt in statusOptions"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value">
+            </el-option>
+          </el-select>
+        </p>
+        <p><span>回复统计</span><el-input v-model="changepost.reply_count" disabled placeholder="不可修改"></el-input></p>
+        <p><span>发帖人用户名</span><el-input v-model="changepost.post_username" disabled placeholder="不可修改"></el-input></p>
         <span slot="footer" class="dialog-footer">
     <el-button @click="function(){editdialogVisible = false;}">取 消</el-button>
-    <el-button type="primary" @click="function(){$confirm('确认修改？').then(_ => {
+    <el-button type="primary" :loading="saving" @click="function(){$confirm('确认修改？').then(_ => {
             submit();
           })
-          .catch(_ => {}); editdialogVisible = false;}">提 交</el-button>
+          .catch(_ => {});}">提 交</el-button>
   </span>
       </el-dialog>
 <!--查看框-->
@@ -149,7 +174,7 @@ export default{
         <h3>{{currentpost.title}}</h3>
         <h2>用户id:</h2>
         <h3>{{currentpost.post_userid}}</h3>
-        <h2>内容:</h2>
+        <h2>摘要:</h2>
         <h3>{{currentpost.content}}</h3>
         <h2>创建时间:</h2>
         <h3>{{currentpost.created_at}}</h3>
@@ -214,4 +239,7 @@ td {
 }
 tbody tr:hover { background: var(--color-surface-hover); }
 tbody tr:last-child td { border-bottom: none; }
+
+/* 编辑弹窗里的“帖子状态”下拉：与同弹窗的 el-input 等宽（el-select 默认按内容收缩） */
+.el-select { width: 100%; }
 </style>
